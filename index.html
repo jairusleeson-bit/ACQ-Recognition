@@ -28,7 +28,7 @@
 
   html, body{
     margin:0; padding:0; height:100%;
-    background: radial-gradient(circle at 15% 0%, #14141a 0%, #050505 55%), var(--bg);
+    background: radial-gradient(circle at 20% -5%, #1a1a1a 0%, #080808 58%), var(--bg);
     color: var(--text);
     font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
@@ -48,10 +48,10 @@
   }
   .brand{ display:flex; align-items:center; gap:10px; padding: 4px 8px 30px 8px; }
   .brand-mark{
-    width:34px; height:34px; border-radius:9px;
-    background: linear-gradient(135deg, var(--pink), var(--purple));
+    width:34px; height:34px; border-radius:8px;
+    background: var(--text); color:#0a0a0a;
     display:flex; align-items:center; justify-content:center;
-    font-weight:800; font-size:13px; letter-spacing:-0.02em;
+    font-weight:900; font-size:14px; letter-spacing:-0.04em;
   }
   .brand-name{ font-size:14px; font-weight:700; letter-spacing:0.02em; line-height:1.15; }
   .brand-sub{ font-size:10.5px; color: var(--text-dimmer); letter-spacing:0.06em; text-transform:uppercase; margin-top:1px; }
@@ -101,7 +101,7 @@
   .stats-row{ display:grid; grid-template-columns: repeat(4, 1fr); gap:14px; margin-bottom: 22px; }
   .stat-card{
     background: var(--panel); border:1px solid var(--border); border-radius: var(--radius-lg);
-    padding: 18px 20px; backdrop-filter: blur(20px);
+    padding: 18px 20px; backdrop-filter: blur(20px); min-width:0; overflow:hidden;
   }
   .stat-card .label{ font-size:11px; color: var(--text-dimmer); text-transform:uppercase; letter-spacing:0.06em; display:flex; align-items:center; gap:6px; }
   .stat-card .value{ font-size:30px; font-weight:800; margin-top:10px; letter-spacing:-0.02em; }
@@ -124,7 +124,7 @@
   .podium-card{
     background: linear-gradient(180deg, var(--panel-strong), var(--panel));
     border:1px solid var(--border); border-radius: var(--radius-lg);
-    padding: 22px 18px; text-align:center; position:relative; overflow:hidden;
+    padding: 22px 18px; text-align:center; position:relative; overflow:hidden; min-width:0;
   }
   .podium-card.rank-1{ order:2; padding-top:30px; }
   .podium-card.rank-2{ order:1; }
@@ -215,9 +215,10 @@
 
   .send-row{ display:flex; align-items:center; justify-content:space-between; margin-top:18px; gap:12px; flex-wrap:wrap; }
   .send-btn{
-    padding: 11px 26px; border-radius:999px; border:none; background: linear-gradient(135deg, var(--pink), var(--purple));
-    color:#fff; font-weight:700; font-size:13.5px; cursor:pointer; transition: opacity .15s ease;
+    padding: 11px 26px; border-radius:999px; border:none; background: var(--text);
+    color:#0a0a0a; font-weight:800; font-size:13.5px; cursor:pointer; transition: opacity .15s ease; letter-spacing:-0.01em;
   }
+  .send-btn:hover{ opacity:0.9; }
   .send-btn:disabled{ opacity:0.35; cursor:not-allowed; }
   .form-error{ font-size:11.5px; color: var(--red); font-weight:600; }
   .form-success{ font-size:11.5px; color: var(--green); font-weight:600; }
@@ -280,7 +281,7 @@
       <div class="brand-mark">R</div>
       <div>
         <div class="brand-name">Recognition</div>
-        <div class="brand-sub">Company Dashboard</div>
+        <div class="brand-sub">Acquisition.com</div>
       </div>
     </div>
 
@@ -306,7 +307,7 @@
 
     <div class="sidebar-footer">
       <div class="me-row">
-        <div class="avatar" style="width:26px;height:26px;font-size:10px;background:linear-gradient(135deg,var(--pink),var(--purple));">JL</div>
+        <div class="avatar" style="width:26px;height:26px;font-size:10px;background:var(--text);color:#0a0a0a;">JL</div>
         Jairus Leeson
       </div>
     </div>
@@ -893,7 +894,7 @@ document.getElementById("rSend").addEventListener("click", () => {
   });
 
   // Capture to the Google Sheet (no-op in local demo mode)
-  postToSheet({ firstName, lastName, senderEmail, recipientEmail, value: valueByKey(recogValue).label, note, tokens: recogTokens });
+  postToSheet({ firstName, lastName, senderEmail, recipientEmail, value: valueByKey(recogValue).label, note, tokens: recogTokens, department: (deptById(dept) ? deptById(dept).name : dept) });
 
   document.getElementById("rName").value = "";
   document.getElementById("rRecipEmail").value = "";
@@ -981,6 +982,89 @@ validateForm();
 renderLeaderboard();
 renderFeed();
 renderInsights();
+
+/* ===========================================================
+   LIVE DATA — read the Google Sheet via JSONP and render from
+   real rows. Falls back silently to the sample data above if
+   the live read isn't available, so the demo never breaks.
+=========================================================== */
+function slugify(s){ return String(s).toLowerCase().trim().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"") || "unassigned"; }
+function titleCaseEmail(email){
+  const local = String(email).split("@")[0] || String(email);
+  return local.split(/[._-]+/).filter(Boolean).map(w => w[0].toUpperCase() + w.slice(1)).join(" ") || String(email);
+}
+function fieldGetter(row){
+  const keys = {}; Object.keys(row).forEach(k => keys[k.trim().toLowerCase()] = k);
+  return (name) => { const k = keys[name]; return k != null ? row[k] : ""; };
+}
+function applyLiveData(rows){
+  if (!Array.isArray(rows) || rows.length === 0) return false;
+  const valueKeyByLabel = {}; VALUES.forEach(v => valueKeyByLabel[v.label.toLowerCase()] = v.key);
+  const peopleByEmail = {}; let pid = 0;
+  const deptMap = {};
+  function personFor(email, displayName, deptId){
+    const e = String(email).trim().toLowerCase(); if (!e) return null;
+    if (peopleByEmail[e]){ if (deptId && peopleByEmail[e].dept === "unassigned") peopleByEmail[e].dept = deptId; return peopleByEmail[e]; }
+    const name = displayName || titleCaseEmail(e);
+    const p = { id: pid++, name, title: "", dept: deptId || "unassigned", email: e,
+      initials: name.split(/\s+/).map(w => w[0]).join("").slice(0,2).toUpperCase() };
+    peopleByEmail[e] = p; return p;
+  }
+  const txs = [];
+  rows.forEach((row, i) => {
+    const g = fieldGetter(row);
+    const first = String(g("first name") || "").trim();
+    const last = String(g("last name") || "").trim();
+    const senderEmail = g("sender_email");
+    const recipEmail = g("recipient_email");
+    const vkey = valueKeyByLabel[String(g("value") || "").trim().toLowerCase()];
+    const note = String(g("note") || "");
+    const tokens = parseInt(g("tokens"), 10) || 0;
+    const deptRaw = String(g("department") || "").trim();
+    if (!vkey || !recipEmail) return;
+    const deptId = deptRaw ? slugify(deptRaw) : "unassigned";
+    deptMap[deptId] = deptRaw || "Unassigned";
+    const recipName = (first || last) ? (first + " " + last).trim() : titleCaseEmail(recipEmail);
+    const to = personFor(recipEmail, recipName, deptId);
+    const from = personFor(senderEmail, null, null);
+    if (!to || !from) return;
+    txs.push({ id: i+1, fromId: from.id, toId: to.id, value: vkey, message: note, tokens,
+      date: new Date(TODAY.getTime() - (rows.length - i) * 60000) });
+  });
+  if (txs.length === 0) return false;
+
+  if (Object.keys(deptMap).length === 0) deptMap["unassigned"] = "Unassigned";
+  const palette = ["#0a84ff","#30d158","#ff9f0a","#64d2ff","#bf5af2","#ff375f","#ffd60a"];
+  DEPARTMENTS.length = 0;
+  Object.keys(deptMap).forEach((id, i) => DEPARTMENTS.push({ id, name: deptMap[id], color: id === "unassigned" ? "#8b8b8b" : palette[i % palette.length] }));
+  PEOPLE.length = 0; Object.values(peopleByEmail).forEach(p => PEOPLE.push(p));
+  TRANSACTIONS.length = 0; txs.forEach(t => TRANSACTIONS.push(t));
+
+  lbDept = "all"; feedDept = "all"; lbShowAll = false; feedExpanded = false;
+  document.getElementById("lbDeptSelect").innerHTML = deptOptionsHTML(true, "all");
+  document.getElementById("feedDeptSelect").innerHTML = deptOptionsHTML(true, "all");
+  document.getElementById("rDept").innerHTML = `<option value="" disabled selected>Select a department…</option>` + deptOptionsHTML(false, null);
+  renderLeaderboard(); renderFeed(); renderInsights();
+  return true;
+}
+function loadLiveData(){
+  if (!SHEETS_WEBAPP_URL) return;
+  const cbName = "__acqLive";
+  let done = false;
+  window[cbName] = function(payload){
+    done = true;
+    const rows = payload && (Array.isArray(payload) ? payload : payload.data);
+    try { applyLiveData(rows || []); } catch(e){ console.warn("live data render failed:", e); }
+    cleanup();
+  };
+  const s = document.createElement("script");
+  s.src = SHEETS_WEBAPP_URL + (SHEETS_WEBAPP_URL.indexOf("?") > -1 ? "&" : "?") + "callback=" + cbName + "&t=" + Date.now();
+  s.onerror = cleanup;
+  function cleanup(){ try { delete window[cbName]; } catch(e){ window[cbName] = undefined; } if (s.parentNode) s.parentNode.removeChild(s); }
+  document.head.appendChild(s);
+  setTimeout(function(){ if (!done) cleanup(); }, 9000);
+}
+loadLiveData();
 </script>
 
 </body>

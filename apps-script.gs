@@ -30,7 +30,8 @@ var FIELD_TO_HEADER = {
   recipientEmail: 'Recipient_email',
   value:          'Value',
   note:           'Note',
-  tokens:         'Tokens'
+  tokens:         'Tokens',
+  department:     'Department'   // optional: add a "Department" column header to capture it
 };
 
 function sheet_() {
@@ -66,10 +67,21 @@ function doPost(e) {
   }
 }
 
-function doGet() {
+// GET returns every row as JSON. Supports JSONP via ?callback=fn so the
+// (cross-origin) dashboard can read the rows without a CORS preflight.
+function doGet(e) {
   try {
     var sheet = sheet_();
-    return json_({ ok: true, message: 'ACQ Recognition endpoint is live', rows: Math.max(sheet.getLastRow() - 1, 0) });
+    var data = [];
+    if (sheet.getLastRow() >= 2) {
+      var v = sheet.getDataRange().getValues();
+      var h = v.shift().map(function (x) { return String(x).trim(); });
+      data = v.map(function (r) { var o = {}; h.forEach(function (k, i) { if (k) o[k] = r[i]; }); return o; });
+    }
+    var out = { ok: true, message: 'ACQ Recognition endpoint is live', rows: data.length, data: data };
+    var cb = e && e.parameter && e.parameter.callback;
+    if (cb) return ContentService.createTextOutput(cb + '(' + JSON.stringify(out) + ')').setMimeType(ContentService.MimeType.JAVASCRIPT);
+    return json_(out);
   } catch (err) {
     return json_({ ok: false, error: String(err) });
   }
