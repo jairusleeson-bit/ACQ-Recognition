@@ -86,42 +86,41 @@
 
   .header-controls{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
 
-  .mode-toggle, .pill-group{
+  .pill-group{
     display:flex; background: var(--panel); border:1px solid var(--border);
     border-radius: 999px; padding:4px; gap:2px;
   }
-  .mode-btn, .pill-btn{
+  .pill-btn{
     padding: 8px 16px; border-radius:999px; font-size:12.5px; font-weight:600;
     color: var(--text-dim); cursor:pointer; border:none; background:transparent;
     transition: all .2s ease; white-space:nowrap;
   }
-  .mode-btn.active, .pill-btn.active{ background: var(--text); color:#000; }
+  .pill-btn.active{ background: var(--text); color:#000; }
 
   /* ---------- Stat cards ---------- */
-  .stats-row{ display:grid; grid-template-columns: repeat(4, 1fr); gap:14px; margin-bottom: 24px; }
+  .stats-row{ display:grid; grid-template-columns: repeat(4, 1fr); gap:14px; margin-bottom: 22px; }
   .stat-card{
     background: var(--panel); border:1px solid var(--border); border-radius: var(--radius-lg);
     padding: 18px 20px; backdrop-filter: blur(20px);
   }
   .stat-card .label{ font-size:11px; color: var(--text-dimmer); text-transform:uppercase; letter-spacing:0.06em; display:flex; align-items:center; gap:6px; }
-  .stat-card .value{ font-size:26px; font-weight:800; margin-top:8px; letter-spacing:-0.01em; }
-  .stat-card .value.small{ font-size:17px; line-height:32px; }
-  .stat-card .value span{ font-size:13px; font-weight:600; color: var(--text-dimmer); margin-left:4px; }
-  .trend-up{ color: var(--green); }
-  .trend-down{ color: var(--red); }
+  .stat-card .value{ font-size:30px; font-weight:800; margin-top:10px; letter-spacing:-0.02em; }
+  .stat-card .value .pct-sub{ font-size:13px; font-weight:600; color: var(--text-dimmer); margin-left:4px; }
+  .stat-card .barline{ height:5px; border-radius:999px; background: rgba(255,255,255,0.08); margin-top:12px; overflow:hidden; }
+  .stat-card .barline span{ display:block; height:100%; border-radius:999px; }
 
-  /* ---------- Filter chips ---------- */
-  .filters{ display:flex; gap:8px; overflow-x:auto; margin-bottom: 22px; padding-bottom:4px; }
-  .chip{
-    flex-shrink:0; padding: 8px 16px; border-radius: 999px; background: var(--panel);
-    border: 1px solid var(--border); font-size: 12.5px; font-weight:600; color: var(--text-dim);
-    cursor:pointer; transition: all .2s ease; white-space:nowrap;
+  /* ---------- Filter dropdown ---------- */
+  .filter-bar{ display:flex; align-items:center; gap:10px; margin-bottom: 20px; flex-wrap:wrap; }
+  .filter-bar label{ font-size:11px; text-transform:uppercase; letter-spacing:0.05em; color: var(--text-dimmer); font-weight:700; }
+  select{
+    background: rgba(255,255,255,0.05); border:1px solid var(--border); color: var(--text);
+    border-radius: var(--radius-sm); padding: 9px 12px; font-size:13.5px; outline:none; cursor:pointer;
   }
-  .chip:hover{ background: var(--panel-strong); color:var(--text); }
-  .chip.active{ background: var(--text); color:#000; border-color: var(--text); }
+  select:focus, textarea:focus, input:focus{ border-color: rgba(255,255,255,0.3); }
+  .filter-select{ min-width: 220px; }
 
   /* ---------- Podium ---------- */
-  .podium{ display:grid; grid-template-columns: 1fr 1fr 1fr; gap:14px; margin-bottom: 26px; }
+  .podium{ display:grid; grid-template-columns: 1fr 1fr 1fr; gap:14px; margin-bottom: 22px; }
   .podium-card{
     background: linear-gradient(180deg, var(--panel-strong), var(--panel));
     border:1px solid var(--border); border-radius: var(--radius-lg);
@@ -155,12 +154,12 @@
   /* ---------- List (leaderboard) ---------- */
   .list-section{ background: var(--panel); border:1px solid var(--border); border-radius: var(--radius-lg); overflow:hidden; }
   .list-head{
-    display:grid; grid-template-columns: 40px 1fr 160px 130px 90px; gap:12px; padding: 14px 22px;
+    display:grid; grid-template-columns: 40px 1fr 150px 160px 90px; gap:12px; padding: 14px 22px;
     font-size:11px; text-transform:uppercase; letter-spacing:0.05em; color: var(--text-dimmer); border-bottom: 1px solid var(--border);
   }
   .list-head .col-right{ text-align:right; }
   .row{
-    display:grid; grid-template-columns: 40px 1fr 160px 130px 90px; gap:12px; align-items:center;
+    display:grid; grid-template-columns: 40px 1fr 150px 160px 90px; gap:12px; align-items:center;
     padding: 13px 22px; border-bottom: 1px solid rgba(255,255,255,0.05); transition: background .15s ease;
   }
   .row:last-child{ border-bottom:none; }
@@ -171,29 +170,33 @@
   .person-info{ min-width:0; }
   .person-name{ font-size:13.5px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .person-title{ font-size:11.5px; color: var(--text-dimmer); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .dept-tag{ font-size:11px; font-weight:600; }
-  .breakdown{ display:flex; flex-direction:column; gap:5px; }
-  .breakdown .value-bar{ margin-top:0; height:4px; }
-  .breakdown-counts{ display:flex; gap:8px; font-size:10px; color: var(--text-dimmer); font-weight:600; }
+  .dept-tag{ font-size:11.5px; font-weight:600; }
+  .val-pill{ display:inline-flex; align-items:center; gap:6px; font-size:11px; font-weight:700; padding:4px 10px; border-radius:999px; white-space:nowrap; }
+  .val-pill .dot{ width:7px; height:7px; }
   .score-cell{ text-align:right; font-size:18px; font-weight:800; }
   .empty-state{ padding: 46px 20px; text-align:center; color: var(--text-dimmer); font-size:13px; }
+  .show-more{
+    display:block; width:100%; padding: 13px; background:transparent; border:none; border-top:1px solid var(--border);
+    color: var(--text-dim); font-weight:700; font-size:12.5px; cursor:pointer; letter-spacing:0.02em;
+  }
+  .show-more:hover{ color: var(--text); background: rgba(255,255,255,0.03); }
 
-  /* ---------- Give form ---------- */
+  /* ---------- Recognition form ---------- */
   .card{ background: var(--panel); border:1px solid var(--border); border-radius: var(--radius-lg); padding: 22px 24px; backdrop-filter: blur(20px); }
   .give-card{ margin-bottom: 26px; }
   .form-grid{ display:grid; grid-template-columns: 1fr 1fr; gap:16px; margin-bottom:16px; }
   .field-label{ font-size:11px; text-transform:uppercase; letter-spacing:0.05em; color: var(--text-dimmer); margin-bottom:7px; font-weight:700; }
-  select, textarea, input[type=text]{
+  .req{ color: var(--pink); }
+  .form-grid select, textarea, input[type=text]{
     width:100%; background: rgba(255,255,255,0.05); border:1px solid var(--border); color: var(--text);
     border-radius: var(--radius-sm); padding: 10px 12px; font-size:13.5px; outline:none;
   }
-  select:focus, textarea:focus, input:focus{ border-color: rgba(255,255,255,0.3); }
   textarea{ resize:vertical; min-height:64px; }
 
   .value-picker{ display:flex; gap:10px; flex-wrap:wrap; }
   .value-pick-btn{
-    flex:1; min-width:170px; padding: 14px 15px; border-radius: var(--radius-md); border:1.5px solid var(--border);
-    background: rgba(255,255,255,0.03); cursor:pointer; text-align:left; transition: all .15s ease; position:relative;
+    flex:1; min-width:180px; padding: 14px 15px; border-radius: var(--radius-md); border:1.5px solid var(--border);
+    background: rgba(255,255,255,0.03); cursor:pointer; text-align:left; transition: all .15s ease;
   }
   .value-pick-btn:hover{ background: rgba(255,255,255,0.06); }
   .value-pick-btn .vdot{ width:10px; height:10px; border-radius:50%; display:inline-block; margin-bottom:9px; }
@@ -230,51 +233,17 @@
   .feed-meta{ display:flex; gap:10px; align-items:center; margin-top:7px; font-size:10.5px; color: var(--text-dimmer); font-weight:600; }
   .feed-note{ font-size:11.5px; color: var(--text-dimmer); margin-bottom:14px; }
 
-  /* ---------- Insights ---------- */
-  .heatmap-table{ width:100%; border-collapse: collapse; }
-  .heatmap-table th{ font-size:10.5px; text-transform:uppercase; letter-spacing:0.04em; color: var(--text-dimmer); text-align:left; padding: 6px 8px; font-weight:700; }
-  .heatmap-table td{ padding:6px 8px; }
-  .heatmap-cell{
-    border-radius:10px; text-align:center; padding:10px 6px; font-size:13px; font-weight:800; color:#fff;
-  }
-  .heatmap-dept{ font-size:12.5px; font-weight:700; white-space:nowrap; }
-
-  /* ---------- Voice notes ---------- */
-  .voice-record-row{ display:flex; align-items:center; gap:12px; }
-  .record-btn{
-    width:40px; height:40px; border-radius:50%; flex-shrink:0;
-    border:1px solid rgba(255,69,58,0.4); background: rgba(255,69,58,0.15); color: var(--red);
-    font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition: all .15s ease;
-  }
-  .record-btn:hover{ background: rgba(255,69,58,0.25); }
-  .record-btn.recording{ background: var(--red); color:#fff; border-color: var(--red); animation: recordPulse 1.2s infinite; }
-  .record-btn:disabled{ opacity:0.35; cursor:not-allowed; animation:none; }
-  @keyframes recordPulse{
-    0%{ box-shadow: 0 0 0 0 rgba(255,69,58,0.5); }
-    70%{ box-shadow: 0 0 0 9px rgba(255,69,58,0); }
-    100%{ box-shadow: 0 0 0 0 rgba(255,69,58,0); }
-  }
-  .record-timer{ font-size:13.5px; font-weight:700; font-variant-numeric: tabular-nums; min-width:34px; }
-  .record-hint{ font-size:11.5px; color: var(--text-dimmer); }
-
-  .voice-preview{ margin-top:12px; display:flex; align-items:center; gap:12px; }
-  .remove-voice{ font-size:11px; color: var(--text-dimmer); cursor:pointer; text-decoration:underline; flex-shrink:0; }
-  .remove-voice:hover{ color: var(--text); }
-
-  .voice-note{
-    display:flex; align-items:center; gap:9px; background: rgba(255,255,255,0.06);
-    border-radius:999px; padding:7px 14px; max-width:270px;
-  }
-  .voice-play-btn{
-    width:26px; height:26px; border-radius:50%; flex-shrink:0; border:none; cursor:pointer;
-    background: linear-gradient(135deg, var(--pink), var(--purple)); color:#fff; font-size:10px;
-    display:flex; align-items:center; justify-content:center; line-height:1;
-  }
-  .voice-wave{ flex:1; display:flex; align-items:center; gap:2px; height:20px; min-width:80px; }
-  .voice-bar{ width:2.5px; border-radius:2px; background: rgba(255,255,255,0.25); flex-shrink:0; transition: background .1s ease; }
-  .voice-bar.played{ background: rgba(255,255,255,0.9); }
-  .voice-duration{ font-size:10.5px; color: var(--text-dimmer); font-weight:700; flex-shrink:0; font-variant-numeric: tabular-nums; }
-  .voice-audio{ display:none; }
+  /* ---------- Insights: 100% stacked bars ---------- */
+  .dist-legend{ display:flex; flex-wrap:wrap; gap:16px; margin-bottom:20px; }
+  .dist-legend span{ display:inline-flex; align-items:center; gap:7px; font-size:12px; color: var(--text-dim); }
+  .dist-legend i{ width:11px; height:11px; border-radius:3px; }
+  .dist-row{ display:flex; align-items:center; gap:16px; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+  .dist-row:last-child{ border-bottom:none; }
+  .dist-name{ width: 130px; flex-shrink:0; font-size:13px; font-weight:700; }
+  .dist-bar{ flex:1; display:flex; gap:2px; height:30px; border-radius:8px; overflow:hidden; background: rgba(255,255,255,0.05); }
+  .dist-seg{ height:100%; display:flex; align-items:center; justify-content:center; font-size:10.5px; font-weight:800; color:#fff; min-width:0; overflow:hidden; transition: opacity .12s; }
+  .dist-seg:hover{ opacity:0.82; }
+  .dist-total{ width:74px; flex-shrink:0; text-align:right; font-size:12px; color: var(--text-dimmer); font-weight:700; }
 
   @media (max-width: 980px){
     .sidebar{ display:none; }
@@ -284,8 +253,10 @@
     .podium-card.rank-1, .podium-card.rank-2, .podium-card.rank-3{ order:0; }
     .list-head{ display:none; }
     .row{ grid-template-columns: 32px 1fr 90px; }
-    .row .dept-tag, .row .breakdown{ display:none; }
+    .row .dept-tag, .row .val-pill{ display:none; }
     .form-grid{ grid-template-columns: 1fr; }
+    .dist-name{ width: 92px; }
+    .dist-total{ display:none; }
   }
 </style>
 </head>
@@ -309,8 +280,8 @@
         Leaderboard
       </div>
       <div class="nav-item" data-view="feed">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v14M5 10l7-7 7 7"/><path d="M5 21h14"/></svg>
-        Give &amp; Feed
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Team Recognition
       </div>
       <div class="nav-item" data-view="insights">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
@@ -347,31 +318,33 @@
             <button class="pill-btn active" data-period="month">This Month</button>
             <button class="pill-btn" data-period="all">All Time</button>
           </div>
-          <div class="mode-toggle" id="lbModeGroup">
-            <button class="mode-btn active" data-mode="received">Most Recognized</button>
-            <button class="mode-btn" data-mode="given">Top Givers</button>
-          </div>
         </div>
       </div>
 
-      <div class="stats-row" id="lbStats"></div>
-      <div class="filters" id="lbFilters"></div>
+      <div class="stats-row" id="lbValueStats"></div>
+
+      <div class="filter-bar">
+        <label for="lbDeptSelect">Department</label>
+        <select id="lbDeptSelect" class="filter-select"></select>
+      </div>
+
       <div class="podium" id="lbPodium"></div>
 
       <div class="list-section">
         <div class="list-head">
-          <div>#</div><div>Person</div><div>Department</div><div>Values</div><div class="col-right">Shoutouts</div>
+          <div>#</div><div>Person</div><div>Department</div><div>Top value</div><div class="col-right">Shoutouts</div>
         </div>
         <div id="lbListBody"></div>
+        <button class="show-more" id="lbShowMore" style="display:none;"></button>
       </div>
     </div>
 
-    <!-- ================= FEED / GIVE ================= -->
+    <!-- ================= TEAM RECOGNITION ================= -->
     <div class="view" id="view-feed">
       <div class="page-header">
         <div>
-          <h1 class="page-title">Give &amp; Feed</h1>
-          <div class="page-subtitle">Recognize a teammate for living one of our values</div>
+          <h1 class="page-title">Team Recognition</h1>
+          <div class="page-subtitle">Recognize a teammate by name for living one of our values</div>
         </div>
       </div>
 
@@ -379,40 +352,33 @@
         <div class="section-title">Give Recognition</div>
         <div class="form-grid">
           <div>
-            <div class="field-label">From</div>
-            <select id="fFrom"></select>
+            <div class="field-label">Name <span class="req">*</span></div>
+            <input id="rName" type="text" autocomplete="off" placeholder="Who are you recognizing?" />
           </div>
           <div>
-            <div class="field-label">Recognize (type a name or department)</div>
-            <input id="fTo" type="text" list="peopleList" autocomplete="off" placeholder="First name, last name, or department…" />
-            <datalist id="peopleList"></datalist>
+            <div class="field-label">Department <span class="req">*</span></div>
+            <select id="rDept"></select>
           </div>
         </div>
 
         <div class="field-label">Value being recognized</div>
-        <div class="value-picker" id="fValuePicker"></div>
+        <div class="value-picker" id="rValuePicker"></div>
 
         <div style="height:16px;"></div>
-        <div class="field-label">Message (optional if you record a voice note)</div>
-        <textarea id="fMessage" placeholder="What did they do?"></textarea>
-
-        <div style="height:16px;"></div>
-        <div class="field-label">Voice shoutout (optional)</div>
-        <div class="voice-record-row">
-          <button class="record-btn" id="fRecordBtn" type="button">●</button>
-          <div class="record-timer" id="fRecordTimer">0:00</div>
-          <div class="record-hint" id="fRecordHint">Tap to record a spoken shoutout</div>
-        </div>
-        <div class="voice-preview" id="fVoicePreview"></div>
+        <div class="field-label">Message</div>
+        <textarea id="rMessage" placeholder="What did they do?"></textarea>
 
         <div class="send-row">
-          <div id="fFeedback"></div>
-          <button class="send-btn" id="fSend">Send Recognition</button>
+          <div id="rFeedback"></div>
+          <button class="send-btn" id="rSend">Send Recognition</button>
         </div>
       </div>
 
       <div class="section-title">Recent Recognition</div>
-      <div class="filters" id="feedFilters"></div>
+      <div class="filter-bar">
+        <label for="feedDeptSelect">Department</label>
+        <select id="feedDeptSelect" class="filter-select"></select>
+      </div>
       <div class="feed-note" id="feedNote"></div>
       <div class="card" id="feedList" style="padding: 6px 20px;"></div>
     </div>
@@ -422,7 +388,7 @@
       <div class="page-header">
         <div>
           <h1 class="page-title">Insights</h1>
-          <div class="page-subtitle">How recognition and values break down across the company</div>
+          <div class="page-subtitle">How each department's recognition splits across our values</div>
         </div>
         <div class="pill-group" id="insPeriodGroup">
           <button class="pill-btn" data-insperiod="month">This Month</button>
@@ -431,11 +397,10 @@
         </div>
       </div>
 
-      <div class="stats-row" id="insStats"></div>
-
       <div class="card">
-        <div class="section-title">Values by Department</div>
-        <table class="heatmap-table" id="heatmapTable"></table>
+        <div class="section-title">Value Mix by Department</div>
+        <div class="dist-legend" id="distLegend"></div>
+        <div id="distList"></div>
       </div>
     </div>
 
@@ -444,39 +409,25 @@
 
 <script>
 /* ===========================================================
-   VALUES  (the four things we recognize)
+   VALUES  (four company values; Speed is not selectable when
+   giving, but appears in historical data / analytics)
 =========================================================== */
 const VALUES = [
   { key: "candor",      label: "Sincere Candor",          color: "#0a84ff", sub: "Honest, direct truth-telling" },
   { key: "competitive", label: "Competitive Greatness",   color: "#ff9f0a", sub: "Refusing to settle for good enough" },
   { key: "character",   label: "Unimpeachable Character", color: "#bf5af2", sub: "Doing right when no one is watching" },
-  { key: "speed",       label: "Speed",                   color: "#30d158", sub: "Moving fast and creating momentum" },
 ];
+const GIVE_VALUES = VALUES;
 const emptyBreakdown = () => Object.fromEntries(VALUES.map(v => [v.key, 0]));
 function valueByKey(key){ return VALUES.find(v => v.key === key); }
 
 const DEPARTMENTS = [
-  { id: "advisory",        name: "Advisory",              color: "#0a84ff" },
-  { id: "advisory-l1",     name: "Advisory L1",           color: "#4aa3ff" },
-  { id: "advisory-l2",     name: "Advisory L2",           color: "#7dbcff" },
-  { id: "advisory-l3",     name: "Advisory L3",           color: "#a9d4ff" },
-  { id: "events",          name: "Events",                color: "#ff375f" },
-  { id: "sales",           name: "Sales",                 color: "#ffd60a" },
-  { id: "client-success",  name: "Client Success",        color: "#30d158" },
-  { id: "vantage",         name: "Vantage",               color: "#64d2ff" },
-  { id: "book",            name: "Book",                  color: "#ac8e68" },
-  { id: "media",           name: "Media",                 color: "#ff9f0a" },
-  { id: "marketing",       name: "Marketing",             color: "#ff6482" },
-  { id: "facilities",      name: "Facilities",            color: "#98989d" },
-  { id: "security",        name: "Security",              color: "#ff453a" },
-  { id: "leadership",      name: "Leadership",            color: "#bf5af2" },
-  { id: "family-office",   name: "Family Office",         color: "#5e5ce6" },
-  { id: "administration",  name: "Administration",        color: "#66d4cf" },
-  { id: "exec-protection", name: "Executive Protection",  color: "#d9a441" },
-  { id: "finance",         name: "Finance",               color: "#2fb8a0" },
-  { id: "people",          name: "People",                color: "#da8fff" },
-  { id: "legal",           name: "Legal",                 color: "#7f8fa6" },
-  { id: "technology",      name: "Technology",            color: "#32c5ff" },
+  { id: "advisory", name: "Advisory", color: "#0a84ff" },
+  { id: "sales",    name: "Sales",    color: "#30d158" },
+  { id: "media",    name: "Media",    color: "#ff9f0a" },
+  { id: "finance",  name: "Finance",  color: "#64d2ff" },
+  { id: "people",   name: "People",   color: "#bf5af2" },
+  { id: "legal",    name: "Legal",    color: "#ff375f" },
 ];
 
 const MESSAGES = {
@@ -501,59 +452,36 @@ const MESSAGES = {
     "Gave credit to the whole team instead of taking it solo.",
     "Stayed consistent under pressure when it would have been easy to cut corners."
   ],
-  speed: [
-    "Turned this around in hours when it could have taken a week.",
-    "Unblocked the whole team the moment it came up — no waiting.",
-    "Shipped a fix before standup while everyone was still typing.",
-    "Answered and resolved it the same day instead of letting it sit.",
-    "Moved on the opportunity immediately instead of overthinking it."
-  ],
 };
 
 const ROSTER = [
   ["Elena Marsh","Head of Advisory","advisory"],["Derek Voss","Senior Advisor","advisory"],
-  ["Priya Nandan","Advisor, L1","advisory-l1"],["Oliver Kane","Advisor, L1","advisory-l1"],["Sofia Reyes","Advisor, L1","advisory-l1"],
-  ["Marcus Webb","Advisor, L2","advisory-l2"],["Talia Grant","Advisor, L2","advisory-l2"],
-  ["Jonah Pierce","Advisor, L3","advisory-l3"],["Nadia Okafor","Advisor, L3","advisory-l3"],
+  ["Priya Nandan","Advisor","advisory"],["Oliver Kane","Advisor","advisory"],
+  ["Sofia Reyes","Client Advisor","advisory"],["Marcus Webb","Advisory Associate","advisory"],
 
-  ["Riley Sanders","Head of Events","events"],["Victor Lindqvist","Event Producer","events"],
+  ["Diego Salazar","VP of Sales","sales"],["Fiona Whitcombe","Sales Director","sales"],
+  ["Kwame Osei","Account Executive","sales"],["Lucia Ferraro","Sales Manager","sales"],
+  ["Trent Michaels","Sales Development Rep","sales"],["Talia Grant","Account Executive","sales"],
 
-  ["Diego Salazar","VP of Sales","sales"],["Fiona Whitcombe","Sales Director","sales"],["Kwame Osei","Account Executive","sales"],
+  ["Zoe Callahan","Head of Media","media"],["Theo Brannigan","Creative Director","media"],
+  ["Layla Farsi","Content Producer","media"],["Gabriel Nunes","Video Editor","media"],
+  ["Wren Ashby","Media Strategist","media"],["Riley Sanders","Producer","media"],
 
-  ["Lucia Ferraro","Head of Client Success","client-success"],["Trent Michaels","Client Success Manager","client-success"],
+  ["Victor Lindqvist","CFO","finance"],["Camille Doyle","Controller","finance"],
+  ["Amir Hassan","FP&A Analyst","finance"],["Beatrice Cho","Accounting Manager","finance"],
+  ["Nathaniel Ross","Finance Associate","finance"],["Ben Farley","Financial Analyst","finance"],
 
-  ["Camille Doyle","Head of Vantage","vantage"],["Amir Hassan","Vantage Analyst","vantage"],
-
-  ["Beatrice Cho","Head of Book","book"],["Nathaniel Ross","Book Associate","book"],
-
-  ["Zoe Callahan","Head of Media","media"],["Theo Brannigan","Creative Director","media"],["Layla Farsi","Content Producer","media"],
-
-  ["Gabriel Nunes","Head of Marketing","marketing"],["Wren Ashby","Marketing Strategist","marketing"],
-
-  ["Hugo Bergstrom","Facilities Manager","facilities"],["Ava Kimura","Facilities Coordinator","facilities"],
-
-  ["Connor Blake","Head of Security","security"],["Simone Achebe","Security Analyst","security"],
-
-  ["Jairus Leeson","Chief of Staff","leadership"],["Yusuf Adeyemi","Chief Operating Officer","leadership"],
-
-  ["Harper Lin","Family Office Director","family-office"],["Desmond Wallace","Family Office Associate","family-office"],
-
-  ["Ingrid Solberg","Office Manager","administration"],["Miles Thatcher","Executive Assistant","administration"],
-
-  ["Priyanka Rao","Protection Lead","exec-protection"],["Roman Vasquez","Protection Specialist","exec-protection"],
-
-  ["Grace Lin","CFO","finance"],["Ben Farley","Controller","finance"],
-
-  ["Maya Chen","Head of People","people"],["Jordan Ellis","People Ops Manager","people"],
+  ["Yusuf Adeyemi","Head of People","people"],["Harper Lin","HR Business Partner","people"],
+  ["Desmond Wallace","Talent Partner","people"],["Ingrid Solberg","People Ops Manager","people"],
+  ["Miles Thatcher","Recruiter","people"],["Jairus Leeson","Chief of Staff","people"],
 
   ["Alana Brooks","General Counsel","legal"],["Chris Okafor","Legal Counsel","legal"],
-
-  ["Nadia Hassan","Head of Technology","technology"],["Devin Park","Software Engineer","technology"],
+  ["Nadia Hassan","Corporate Counsel","legal"],["Priyanka Rao","Paralegal","legal"],
+  ["Simone Achebe","Compliance Manager","legal"],["Hugo Bergstrom","Legal Operations","legal"],
 ];
 
 /* Fixed "now" so the demo dataset (past 90 days) is always coherent. */
 const TODAY = new Date("2026-06-30T12:00:00");
-const MONTH_NAMES = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 
 /* ===========================================================
    Deterministic PRNG (fixed seed -> same demo data every load)
@@ -595,7 +523,6 @@ function weightedPick(weightFn, excludeId){
 
 /* ===========================================================
    Recognition log -- one event per shoutout, past 90 days.
-   Everything (leaderboard, feed, insights) derives from this.
 =========================================================== */
 const TRANSACTIONS = [];
 let txId = 1;
@@ -637,20 +564,6 @@ function getRange(key){
   if (key === "quarter"){ const q = Math.floor(TODAY.getMonth()/3); const start = new Date(TODAY.getFullYear(), q*3, 1); return {start, end}; }
   return { start: null, end };
 }
-function prevPeriodRange(key){
-  if (key === "month"){
-    const start = new Date(TODAY.getFullYear(), TODAY.getMonth()-1, 1);
-    const end = new Date(TODAY.getFullYear(), TODAY.getMonth(), 0, 23,59,59,999);
-    return {start, end};
-  }
-  if (key === "quarter"){
-    const q = Math.floor(TODAY.getMonth()/3);
-    const start = new Date(TODAY.getFullYear(), (q-1)*3, 1);
-    const end = new Date(TODAY.getFullYear(), q*3, 0, 23,59,59,999);
-    return {start, end};
-  }
-  return { start: null, end: new Date(0) };
-}
 function relTime(date){
   const diffDays = Math.floor((TODAY - date) / 86400000);
   if (diffDays <= 0) return "Today";
@@ -661,7 +574,7 @@ function relTime(date){
 }
 
 /* ===========================================================
-   Derived aggregates  (counts of recognitions)
+   Aggregates
 =========================================================== */
 function personTotals(mode, range, deptFilter){
   const map = {};
@@ -675,16 +588,12 @@ function personTotals(mode, range, deptFilter){
   });
   return Object.values(map);
 }
+function topValueOf(breakdown){
+  let best = null, bestN = 0;
+  VALUES.forEach(v => { if (breakdown[v.key] > bestN){ bestN = breakdown[v.key]; best = v; } });
+  return best;
+}
 
-function valueBarHTML(breakdown, tot){
-  return `<div class="value-bar">${VALUES.map(v => {
-    const pct = tot ? (breakdown[v.key] / tot * 100) : 0;
-    return `<span style="width:${pct}%; background:${v.color};"></span>`;
-  }).join("")}</div>`;
-}
-function breakdownCountsHTML(breakdown){
-  return `<div class="breakdown-counts">${VALUES.map(v => `<span style="color:${v.color}">${breakdown[v.key]}</span>`).join("")}</div>`;
-}
 function shade(hex){
   const n = parseInt(hex.slice(1),16);
   const r = Math.max(0,(n>>16)-40), g = Math.max(0,((n>>8)&0xff)-40), b = Math.max(0,(n&0xff)-40);
@@ -694,84 +603,27 @@ function avatarStyle(dept){ const c = deptById(dept)?.color || "#888"; return `b
 function avatarHTML(person, size){
   return `<div class="avatar" style="width:${size}px;height:${size}px;font-size:${Math.round(size*0.36)}px;${avatarStyle(person.dept)}">${person.initials}</div>`;
 }
+function valueBarHTML(breakdown, tot){
+  return `<div class="value-bar">${VALUES.map(v => {
+    const pct = tot ? (breakdown[v.key] / tot * 100) : 0;
+    return `<span style="width:${pct}%; background:${v.color};"></span>`;
+  }).join("")}</div>`;
+}
+function deptOptionsHTML(includeAll, selectedId){
+  const list = includeAll ? [{id:"all", name:"All Departments"}, ...DEPARTMENTS] : DEPARTMENTS;
+  return list.map(d => `<option value="${d.id}" ${d.id===selectedId?"selected":""}>${d.name}</option>`).join("");
+}
 
 /* ===========================================================
    STATE
 =========================================================== */
-let lbMode = "received", lbPeriod = "month", lbDept = "all";
-let feedDept = "all";
-let fValue = null;
+let lbPeriod = "month", lbDept = "all", lbShowAll = false;
+let feedDept = "all", feedShowAll = false;
+let recogValue = null;
 let insPeriod = "quarter";
 
-/* ---- Voice notes ---- */
-let mediaRecorder = null, recordedChunks = [], recordTimerInterval = null, recordSeconds = 0, isRecording = false;
-let currentVoiceBlob = null, currentVoiceUrl = null, currentVoiceDuration = 0;
-let nowPlayingAudio = null;
-
-function supportsRecording(){
-  return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder);
-}
-function fmtTime(sec){
-  sec = Math.max(0, Math.round(sec));
-  const m = Math.floor(sec/60), s = sec % 60;
-  return m + ":" + String(s).padStart(2,"0");
-}
-function waveformHeights(seedNum, count){
-  const r = mulberry32(seedNum + 100000);
-  const arr = [];
-  for (let i=0;i<count;i++) arr.push(4 + Math.floor(r()*15));
-  return arr;
-}
-function voiceBubbleHTML(url, duration, seedNum){
-  const bars = waveformHeights(seedNum, 20).map(h => `<span class="voice-bar" style="height:${h}px"></span>`).join("");
-  return `
-    <div class="voice-note">
-      <button class="voice-play-btn" type="button">▶</button>
-      <div class="voice-wave">${bars}</div>
-      <span class="voice-duration">${fmtTime(duration)}</span>
-      <audio class="voice-audio" src="${url}" preload="metadata"></audio>
-    </div>
-  `;
-}
-function wireVoicePlayback(container){
-  container.addEventListener("click", (e) => {
-    const btn = e.target.closest(".voice-play-btn");
-    if (!btn) return;
-    const note = btn.closest(".voice-note");
-    const audio = note.querySelector(".voice-audio");
-    if (nowPlayingAudio && nowPlayingAudio !== audio){
-      nowPlayingAudio.pause();
-      const otherNote = nowPlayingAudio.closest(".voice-note");
-      if (otherNote) otherNote.querySelector(".voice-play-btn").textContent = "▶";
-    }
-    if (audio.paused){ audio.play(); btn.textContent = "⏸"; nowPlayingAudio = audio; }
-    else { audio.pause(); btn.textContent = "▶"; }
-  });
-  container.addEventListener("timeupdate", (e) => {
-    if (!e.target.classList || !e.target.classList.contains("voice-audio")) return;
-    const note = e.target.closest(".voice-note");
-    const bars = note.querySelectorAll(".voice-bar");
-    const ratio = e.target.duration ? e.target.currentTime / e.target.duration : 0;
-    const lit = Math.floor(ratio * bars.length);
-    bars.forEach((b,i) => b.classList.toggle("played", i < lit));
-  }, true);
-  container.addEventListener("ended", (e) => {
-    if (!e.target.classList || !e.target.classList.contains("voice-audio")) return;
-    const note = e.target.closest(".voice-note");
-    note.querySelector(".voice-play-btn").textContent = "▶";
-    note.querySelectorAll(".voice-bar").forEach(b => b.classList.remove("played"));
-  }, true);
-}
-function renderVoicePreview(){
-  const el = document.getElementById("fVoicePreview");
-  if (!currentVoiceBlob){ el.innerHTML = ""; return; }
-  el.innerHTML = voiceBubbleHTML(currentVoiceUrl, currentVoiceDuration, txId) + `<span class="remove-voice" id="fRemoveVoice">Remove</span>`;
-  document.getElementById("fRemoveVoice").addEventListener("click", () => {
-    currentVoiceBlob = null; currentVoiceUrl = null; currentVoiceDuration = 0;
-    renderVoicePreview();
-    validateForm();
-  });
-}
+const LB_INITIAL = 10; // podium (3) + 7 rows
+const FEED_INITIAL = 5;
 
 /* ===========================================================
    Sidebar value legend
@@ -782,38 +634,29 @@ document.getElementById("valueLegend").innerHTML = VALUES.map(v =>
 /* ===========================================================
    LEADERBOARD
 =========================================================== */
-function renderDeptChips(containerId, activeVal, onClick){
-  const el = document.getElementById(containerId);
-  const chips = [{id:"all", name:"All Departments"}, ...DEPARTMENTS];
-  el.innerHTML = chips.map(d => `<div class="chip ${d.id===activeVal?'active':''}" data-dept="${d.id}">${d.name}</div>`).join("");
-  el.querySelectorAll(".chip").forEach(chip => chip.addEventListener("click", () => onClick(chip.dataset.dept)));
-}
-
 function renderLeaderboard(){
   const range = getRange(lbPeriod);
-  let list = personTotals(lbMode, range, lbDept);
-  list.sort((a,b) => b.total - a.total);
+  let list = personTotals("received", range, lbDept).sort((a,b) => b.total - a.total);
+  const active = list.filter(p => p.total > 0);
 
   const periodLabel = lbPeriod === "week" ? "this week" : lbPeriod === "month" ? "this month" : "all time";
   const deptLabel = lbDept === "all" ? "Company-wide" : deptById(lbDept).name;
-  const modeLabel = lbMode === "given" ? "given" : "received";
-  document.getElementById("lbSubtitle").textContent = `${deptLabel} · Ranked by shoutouts ${modeLabel} · ${periodLabel}`;
+  document.getElementById("lbSubtitle").textContent = `${deptLabel} · Most recognized · ${periodLabel}`;
 
-  const totalGiven = personTotals("given", range, lbDept).reduce((s,p)=>s+p.total,0);
-  const activePeople = list.filter(p => p.total > 0).length;
-  const byValue = VALUES.map(v => ({...v, count: list.reduce((s,p)=>s+p.breakdown[v.key],0)})).sort((a,b)=>b.count-a.count);
-  const topValue = byValue[0];
+  // Value-percentage stat cards
+  const totalShoutouts = active.reduce((s,p)=>s+p.total,0);
+  document.getElementById("lbValueStats").innerHTML = VALUES.map(v => {
+    const count = active.reduce((s,p)=>s+p.breakdown[v.key],0);
+    const pct = totalShoutouts ? Math.round(count / totalShoutouts * 100) : 0;
+    return `<div class="stat-card">
+      <div class="label"><span class="dot" style="background:${v.color}"></span>${v.label}</div>
+      <div class="value">${pct}<span class="pct-sub">%</span></div>
+      <div class="barline"><span style="width:${pct}%; background:${v.color}"></span></div>
+    </div>`;
+  }).join("");
 
-  document.getElementById("lbStats").innerHTML = `
-    <div class="stat-card"><div class="label">People in View</div><div class="value">${list.length}</div></div>
-    <div class="stat-card"><div class="label">Shoutouts Given</div><div class="value">${totalGiven.toLocaleString()}</div></div>
-    <div class="stat-card"><div class="label">People Active</div><div class="value">${activePeople}<span>/ ${list.length}</span></div></div>
-    <div class="stat-card"><div class="label"><span class="dot" style="background:${topValue.color}"></span>Top Value</div><div class="value small">${topValue.count ? topValue.label : "—"}</div></div>
-  `;
-
-  renderDeptChips("lbFilters", lbDept, (id) => { lbDept = id; renderLeaderboard(); });
-
-  const top3 = list.filter(p => p.total > 0).slice(0,3);
+  // Podium (top 3)
+  const top3 = active.slice(0,3);
   const podiumEl = document.getElementById("lbPodium");
   if (top3.length < 3){
     podiumEl.style.display = "none";
@@ -828,115 +671,105 @@ function renderLeaderboard(){
           <div class="podium-crown">${crowns[idx]}</div>
           ${avatarHTML(person, idx===0?68:56)}
           <div class="podium-name">${person.name}</div>
-          <div class="podium-title">${person.title}</div>
+          <div class="podium-title">${person.title || "&nbsp;"}</div>
           <div class="podium-dept">${dept.name}</div>
           <div class="podium-score">${p.total}</div>
           <div class="podium-score-label">shoutouts</div>
           ${valueBarHTML(p.breakdown, p.total)}
-        </div>
-      `;
+        </div>`;
     }).join("");
   }
 
-  const rest = list.filter(p => p.total > 0).slice(3);
+  // Ranked list (rank 4+), capped at top 10 unless expanded
+  const rest = active.slice(3);
+  const visible = lbShowAll ? rest : rest.slice(0, LB_INITIAL - 3);
   const bodyEl = document.getElementById("lbListBody");
-  if (list.filter(p => p.total > 0).length === 0){
+  if (active.length === 0){
     bodyEl.innerHTML = `<div class="empty-state">No recognition in this range yet.</div>`;
   } else {
-    bodyEl.innerHTML = rest.map((p, idx) => {
+    bodyEl.innerHTML = visible.map((p, idx) => {
       const person = p.person, dept = deptById(person.dept);
+      const tv = topValueOf(p.breakdown);
+      const pill = tv ? `<span class="val-pill" style="background:${tv.color}22;color:${tv.color}"><span class="dot" style="background:${tv.color}"></span>${tv.label}</span>` : "—";
       return `
         <div class="row">
           <div class="rank-num">${idx+4}</div>
-          <div class="person">${avatarHTML(person,36)}<div class="person-info"><div class="person-name">${person.name}</div><div class="person-title">${person.title}</div></div></div>
+          <div class="person">${avatarHTML(person,36)}<div class="person-info"><div class="person-name">${person.name}</div><div class="person-title">${person.title || ""}</div></div></div>
           <div class="dept-tag" style="color:${dept.color}">${dept.name}</div>
-          <div class="breakdown">${valueBarHTML(p.breakdown, p.total)}${breakdownCountsHTML(p.breakdown)}</div>
+          <div>${pill}</div>
           <div class="score-cell">${p.total}</div>
-        </div>
-      `;
+        </div>`;
     }).join("") || `<div class="empty-state">Only the podium has recognition so far.</div>`;
+  }
+
+  // Show more / less
+  const btn = document.getElementById("lbShowMore");
+  if (rest.length > (LB_INITIAL - 3)){
+    btn.style.display = "block";
+    btn.textContent = lbShowAll ? "Show less" : `Show all ${active.length} people`;
+  } else {
+    btn.style.display = "none";
   }
 }
 
 document.getElementById("lbPeriodGroup").addEventListener("click", (e) => {
   const btn = e.target.closest(".pill-btn"); if(!btn) return;
-  lbPeriod = btn.dataset.period;
+  lbPeriod = btn.dataset.period; lbShowAll = false;
   document.querySelectorAll("#lbPeriodGroup .pill-btn").forEach(b => b.classList.toggle("active", b===btn));
   renderLeaderboard();
 });
-document.getElementById("lbModeGroup").addEventListener("click", (e) => {
-  const btn = e.target.closest(".mode-btn"); if(!btn) return;
-  lbMode = btn.dataset.mode;
-  document.querySelectorAll("#lbModeGroup .mode-btn").forEach(b => b.classList.toggle("active", b===btn));
-  renderLeaderboard();
+document.getElementById("lbDeptSelect").addEventListener("change", (e) => {
+  lbDept = e.target.value; lbShowAll = false; renderLeaderboard();
 });
+document.getElementById("lbShowMore").addEventListener("click", () => { lbShowAll = !lbShowAll; renderLeaderboard(); });
 
 /* ===========================================================
-   GIVE + FEED
+   TEAM RECOGNITION (give + feed)
 =========================================================== */
-function populatePersonSelect(select, selectedId){
-  select.innerHTML = DEPARTMENTS.map(d => {
-    const opts = PEOPLE.filter(p => p.dept === d.id).map(p => `<option value="${p.id}" ${p.id===selectedId?"selected":""}>${p.name} — ${p.title}</option>`).join("");
-    return `<optgroup label="${d.name}">${opts}</optgroup>`;
-  }).join("");
-}
-
-/* Recipient typeahead: a datalist of "Name — Title · Dept" strings. */
-const personLabel = p => `${p.name} — ${p.title} · ${deptById(p.dept).name}`;
-const labelToId = {};
-function buildPeopleDatalist(){
-  const dl = document.getElementById("peopleList");
-  dl.innerHTML = PEOPLE.map(p => { labelToId[personLabel(p)] = p.id; return `<option value="${personLabel(p)}"></option>`; }).join("");
-}
-function resolveRecipientId(){
-  const raw = document.getElementById("fTo").value.trim();
-  if (labelToId[raw] != null) return labelToId[raw];
-  // fall back to a case-insensitive full-name match
-  const byName = PEOPLE.find(p => p.name.toLowerCase() === raw.toLowerCase());
-  return byName ? byName.id : null;
-}
-
 function renderValuePicker(){
-  const el = document.getElementById("fValuePicker");
-  el.innerHTML = VALUES.map(v => `
-    <div class="value-pick-btn ${fValue===v.key?'selected':''}" data-value="${v.key}" style="${fValue===v.key?`border-color:${v.color};`:''}">
+  const el = document.getElementById("rValuePicker");
+  el.innerHTML = GIVE_VALUES.map(v => `
+    <div class="value-pick-btn ${recogValue===v.key?'selected':''}" data-value="${v.key}" style="${recogValue===v.key?`border-color:${v.color};`:''}">
       <span class="vdot" style="background:${v.color}"></span>
-      <div class="vname" style="${fValue===v.key?`color:${v.color};`:''}">${v.label}</div>
+      <div class="vname" style="${recogValue===v.key?`color:${v.color};`:''}">${v.label}</div>
       <div class="vsub">${v.sub}</div>
-    </div>
-  `).join("");
-  el.querySelectorAll(".value-pick-btn").forEach(btn => btn.addEventListener("click", () => { fValue = btn.dataset.value; renderValuePicker(); validateForm(); }));
+    </div>`).join("");
+  el.querySelectorAll(".value-pick-btn").forEach(btn => btn.addEventListener("click", () => { recogValue = btn.dataset.value; renderValuePicker(); validateForm(); }));
 }
-
-function currentFromId(){ return parseInt(document.getElementById("fFrom").value, 10); }
 
 function computeFormError(){
-  const fromId = currentFromId();
-  const toId = resolveRecipientId();
-  const rawTo = document.getElementById("fTo").value.trim();
-  if (!rawTo) return "Type the name of the person you're recognizing.";
-  if (toId == null) return "Pick a teammate from the list.";
-  if (fromId === toId) return "You can't recognize yourself — pick someone else.";
-  if (!fValue) return "Choose which value this recognizes.";
-  const hasText = document.getElementById("fMessage").value.trim().length > 0;
-  const hasVoice = !!currentVoiceBlob;
-  if (!hasText && !hasVoice) return "Add a short message or record a voice note.";
+  const name = document.getElementById("rName").value.trim();
+  const dept = document.getElementById("rDept").value;
+  if (!name) return "Enter the name of the person you're recognizing.";
+  if (!dept) return "Choose the person's department.";
+  if (!recogValue) return "Choose which value this recognizes.";
+  if (!document.getElementById("rMessage").value.trim()) return "Add a short message about what they did.";
   return "";
 }
 function validateForm(){
   const error = computeFormError();
-  document.getElementById("fFeedback").innerHTML = error ? `<span class="form-error">${error}</span>` : "";
-  document.getElementById("fSend").disabled = !!error;
+  document.getElementById("rFeedback").innerHTML = error ? `<span class="form-error">${error}</span>` : "";
+  document.getElementById("rSend").disabled = !!error;
   return !error;
 }
 
+function resolveOrCreateRecipient(name, deptId){
+  const clean = name.trim();
+  const existing = PEOPLE.find(p => p.name.toLowerCase() === clean.toLowerCase());
+  if (existing) return existing.id;
+  const np = {
+    id: PEOPLE.length, name: clean, title: "", dept: deptId,
+    initials: clean.split(/\s+/).map(w => w[0]).join("").slice(0,2).toUpperCase() || "?",
+  };
+  PEOPLE.push(np);
+  return np.id;
+}
+
 function renderFeed(){
-  renderDeptChips("feedFilters", feedDept, (id) => { feedDept = id; renderFeed(); });
   const filtered = TRANSACTIONS.filter(t => feedDept === "all" || personById(t.toId).dept === feedDept || personById(t.fromId).dept === feedDept)
-    .slice()
-    .sort((a,b) => b.date - a.date);
-  const shown = filtered.slice(0, 60);
-  document.getElementById("feedNote").textContent = `Showing latest ${shown.length} of ${filtered.length} recognitions`;
+    .slice().sort((a,b) => b.date - a.date);
+  const shown = feedShowAll ? filtered : filtered.slice(0, FEED_INITIAL);
+  document.getElementById("feedNote").textContent = `Showing ${shown.length} of ${filtered.length} recognitions`;
   const listEl = document.getElementById("feedList");
   if (shown.length === 0){
     listEl.innerHTML = `<div class="empty-state">No recognitions yet in this department.</div>`;
@@ -951,129 +784,85 @@ function renderFeed(){
         <div class="feed-body">
           <div class="feed-line1"><b>${from.name}</b> recognized <b>${to.name}</b><span class="feed-tag" style="background:${v.color}22;color:${v.color}">${v.label}</span></div>
           ${t.message ? `<div class="feed-msg">"${t.message}"</div>` : ""}
-          ${t.voiceUrl ? `<div style="margin-top:8px;">${voiceBubbleHTML(t.voiceUrl, t.voiceDuration, t.id)}</div>` : ""}
           <div class="feed-meta"><span>${relTime(t.date)}</span><span>${deptById(to.dept).name}</span></div>
         </div>
-      </div>
-    `;
+      </div>`;
   }).join("");
+
+  // append show more button inside the card
+  if (filtered.length > FEED_INITIAL){
+    const b = document.createElement("button");
+    b.className = "show-more";
+    b.textContent = feedShowAll ? "Show less" : `Show more (${filtered.length - FEED_INITIAL} more)`;
+    b.addEventListener("click", () => { feedShowAll = !feedShowAll; renderFeed(); });
+    listEl.appendChild(b);
+  }
 }
 
-document.getElementById("fFrom").addEventListener("change", validateForm);
-document.getElementById("fTo").addEventListener("input", validateForm);
-document.getElementById("fMessage").addEventListener("input", validateForm);
+document.getElementById("rName").addEventListener("input", validateForm);
+document.getElementById("rDept").addEventListener("change", validateForm);
+document.getElementById("rMessage").addEventListener("input", validateForm);
+document.getElementById("feedDeptSelect").addEventListener("change", (e) => { feedDept = e.target.value; feedShowAll = false; renderFeed(); });
 
-document.getElementById("fRecordBtn").addEventListener("click", async () => {
-  const btn = document.getElementById("fRecordBtn");
-  const hint = document.getElementById("fRecordHint");
-
-  if (!supportsRecording()){
-    hint.textContent = "Voice notes need microphone access — not available in this browser/context.";
-    return;
-  }
-
-  if (!isRecording){
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      recordedChunks = [];
-      mediaRecorder = new MediaRecorder(stream);
-      mediaRecorder.addEventListener("dataavailable", (e) => { if (e.data.size > 0) recordedChunks.push(e.data); });
-      mediaRecorder.addEventListener("stop", () => {
-        stream.getTracks().forEach(t => t.stop());
-        const blob = new Blob(recordedChunks, { type: mediaRecorder.mimeType || "audio/webm" });
-        currentVoiceBlob = blob;
-        currentVoiceUrl = URL.createObjectURL(blob);
-        currentVoiceDuration = recordSeconds;
-        renderVoicePreview();
-        validateForm();
-      });
-      mediaRecorder.start();
-      isRecording = true;
-      recordSeconds = 0;
-      document.getElementById("fRecordTimer").textContent = fmtTime(0);
-      btn.classList.add("recording");
-      btn.textContent = "■";
-      hint.textContent = "Recording… tap again to stop";
-      recordTimerInterval = setInterval(() => {
-        recordSeconds++;
-        document.getElementById("fRecordTimer").textContent = fmtTime(recordSeconds);
-      }, 1000);
-    } catch (err){
-      hint.textContent = "Microphone access denied or unavailable.";
-    }
-  } else {
-    mediaRecorder.stop();
-    isRecording = false;
-    clearInterval(recordTimerInterval);
-    btn.classList.remove("recording");
-    btn.textContent = "●";
-    hint.textContent = "Tap to record another take";
-  }
-});
-
-document.getElementById("fSend").addEventListener("click", () => {
+document.getElementById("rSend").addEventListener("click", () => {
   if (!validateForm()) return;
-  const fromId = currentFromId(), toId = resolveRecipientId();
+  const name = document.getElementById("rName").value.trim();
+  const dept = document.getElementById("rDept").value;
+  const toId = resolveOrCreateRecipient(name, dept);
   TRANSACTIONS.push({
-    id: txId++, fromId, toId, value: fValue,
-    message: document.getElementById("fMessage").value.trim(),
-    voiceUrl: currentVoiceUrl, voiceDuration: currentVoiceDuration,
+    id: txId++, fromId: JAIRUS_ID, toId, value: recogValue,
+    message: document.getElementById("rMessage").value.trim(),
     date: nextLiveTimestamp()
   });
-  const toName = personById(toId).name;
-  document.getElementById("fMessage").value = "";
-  document.getElementById("fTo").value = "";
-  fValue = null; renderValuePicker();
-  currentVoiceBlob = null; currentVoiceUrl = null; currentVoiceDuration = 0;
-  renderVoicePreview();
-  document.getElementById("fRecordHint").textContent = "Tap to record a spoken shoutout";
-  document.getElementById("fFeedback").innerHTML = `<span class="form-success">Sent! ${toName} just got recognized.</span>`;
-  document.getElementById("fSend").disabled = true;
+  document.getElementById("rName").value = "";
+  document.getElementById("rMessage").value = "";
+  document.getElementById("rDept").selectedIndex = 0;
+  recogValue = null; renderValuePicker();
+  document.getElementById("rFeedback").innerHTML = `<span class="form-success">Sent! ${name} just got recognized.</span>`;
+  document.getElementById("rSend").disabled = true;
+  feedShowAll = false;
   renderFeed();
   renderLeaderboard();
   renderInsights();
 });
 
 /* ===========================================================
-   INSIGHTS
+   INSIGHTS -- 100% stacked bars per department
 =========================================================== */
 function renderInsights(){
   const range = getRange(insPeriod);
-  const prevRange = prevPeriodRange(insPeriod);
+  document.getElementById("distLegend").innerHTML = VALUES.map(v =>
+    `<span><i style="background:${v.color}"></i>${v.label}</span>`).join("");
 
-  const totalThisPeriod = TRANSACTIONS.filter(t => inRange(t.date, range)).length;
-  const totalPrevPeriod = TRANSACTIONS.filter(t => inRange(t.date, prevRange)).length;
-  const pctChange = totalPrevPeriod ? Math.round(((totalThisPeriod - totalPrevPeriod) / totalPrevPeriod) * 100) : null;
+  const rows = DEPARTMENTS.map(d => {
+    const counts = emptyBreakdown();
+    let total = 0;
+    TRANSACTIONS.forEach(t => {
+      if (!inRange(t.date, range)) return;
+      if (personById(t.toId).dept !== d.id) return;
+      counts[t.value] += 1; total += 1;
+    });
+    return { dept: d, counts, total };
+  });
 
-  const byValue = VALUES.map(v => ({...v, count: TRANSACTIONS.filter(t => inRange(t.date,range) && t.value===v.key).length})).sort((a,b)=>b.count-a.count);
-  const topValue = byValue[0];
-
-  const activePeople = new Set();
-  TRANSACTIONS.filter(t => inRange(t.date, range)).forEach(t => { activePeople.add(t.fromId); activePeople.add(t.toId); });
-
-  document.getElementById("insStats").innerHTML = `
-    <div class="stat-card"><div class="label">Shoutouts This Period</div><div class="value">${totalThisPeriod.toLocaleString()}</div></div>
-    <div class="stat-card"><div class="label">vs. Prior Period</div><div class="value ${pctChange===null?'':pctChange>=0?'trend-up':'trend-down'}">${pctChange===null?"—":(pctChange>=0?"+":"")+pctChange+"%"}</div></div>
-    <div class="stat-card"><div class="label"><span class="dot" style="background:${topValue.color}"></span>Leading Value</div><div class="value small">${topValue.label}</div></div>
-    <div class="stat-card"><div class="label">Active Participants</div><div class="value">${activePeople.size}<span>/ ${PEOPLE.length}</span></div></div>
-  `;
-
-  const cellCount = (v, d) => TRANSACTIONS.filter(t => inRange(t.date,range) && t.value===v.key && personById(t.toId).dept===d.id).length;
-  const maxCell = Math.max(1, ...DEPARTMENTS.map(d => Math.max(...VALUES.map(v => cellCount(v, d)))));
-  const table = document.getElementById("heatmapTable");
-  table.innerHTML = `
-    <tr><th></th>${VALUES.map(v => `<th>${v.label}</th>`).join("")}</tr>
-    ${DEPARTMENTS.map(d => `
-      <tr>
-        <td class="heatmap-dept" style="color:${d.color}">${d.name}</td>
-        ${VALUES.map(v => {
-          const count = cellCount(v, d);
-          const intensity = 0.12 + (count / maxCell) * 0.75;
-          return `<td><div class="heatmap-cell" style="background:${v.color}; opacity:${intensity.toFixed(2)}">${count}</div></td>`;
-        }).join("")}
-      </tr>
-    `).join("")}
-  `;
+  document.getElementById("distList").innerHTML = rows.map(r => {
+    let segs;
+    if (r.total === 0){
+      segs = `<div class="dist-seg" style="width:100%;background:rgba(255,255,255,0.05);color:var(--text-dimmer)">No recognition yet</div>`;
+    } else {
+      segs = VALUES.map(v => {
+        const pct = r.counts[v.key] / r.total * 100;
+        if (pct === 0) return "";
+        return `<div class="dist-seg" title="${v.label}: ${Math.round(pct)}% (${r.counts[v.key]})" style="width:${pct}%; background:${v.color}">${pct >= 9 ? Math.round(pct)+"%" : ""}</div>`;
+      }).join("");
+    }
+    return `
+      <div class="dist-row">
+        <div class="dist-name" style="color:${r.dept.color}">${r.dept.name}</div>
+        <div class="dist-bar">${segs}</div>
+        <div class="dist-total">${r.total} total</div>
+      </div>`;
+  }).join("");
 }
 
 document.getElementById("insPeriodGroup").addEventListener("click", (e) => {
@@ -1098,18 +887,11 @@ document.querySelectorAll(".nav-item[data-view]").forEach(item => {
 /* ===========================================================
    INIT
 =========================================================== */
-populatePersonSelect(document.getElementById("fFrom"), JAIRUS_ID);
-buildPeopleDatalist();
+document.getElementById("lbDeptSelect").innerHTML = deptOptionsHTML(true, "all");
+document.getElementById("feedDeptSelect").innerHTML = deptOptionsHTML(true, "all");
+document.getElementById("rDept").innerHTML = `<option value="" disabled selected>Select a department…</option>` + deptOptionsHTML(false, null);
 renderValuePicker();
 validateForm();
-
-wireVoicePlayback(document.getElementById("fVoicePreview"));
-wireVoicePlayback(document.getElementById("feedList"));
-if (!supportsRecording()){
-  const recBtn = document.getElementById("fRecordBtn");
-  recBtn.disabled = true;
-  document.getElementById("fRecordHint").textContent = "Voice notes aren't supported in this browser/context.";
-}
 
 renderLeaderboard();
 renderFeed();
