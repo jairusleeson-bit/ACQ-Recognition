@@ -469,13 +469,15 @@ const emptyBreakdown = () => Object.fromEntries(VALUES.map(v => [v.key, 0]));
 function valueByKey(key){ return VALUES.find(v => v.key === key); }
 
 const DEPARTMENTS = [
-  { id: "advisory", name: "Advisory", color: "#0a84ff" },
-  { id: "sales",    name: "Sales",    color: "#30d158" },
   { id: "media",    name: "Media",    color: "#ff9f0a" },
-  { id: "finance",  name: "Finance",  color: "#64d2ff" },
   { id: "people",   name: "People",   color: "#bf5af2" },
-  { id: "legal",    name: "Legal",    color: "#ff375f" },
+  { id: "finance",  name: "Finance",  color: "#64d2ff" },
+  { id: "tech",     name: "Tech",     color: "#30d158" },
+  { id: "advisory", name: "Advisory", color: "#0a84ff" },
+  { id: "sales",    name: "Sales",    color: "#ffd60a" },
 ];
+// Canonical department options for the give form — never overwritten by live data.
+const GIVE_DEPARTMENTS = DEPARTMENTS.map(function(d){ return { id: d.id, name: d.name, color: d.color }; });
 
 const MESSAGES = {
   candor: [
@@ -522,9 +524,9 @@ const ROSTER = [
   ["Desmond Wallace","Talent Partner","people"],["Ingrid Solberg","People Ops Manager","people"],
   ["Miles Thatcher","Recruiter","people"],["Jairus Leeson","Chief of Staff","people"],
 
-  ["Alana Brooks","General Counsel","legal"],["Chris Okafor","Legal Counsel","legal"],
-  ["Nadia Hassan","Corporate Counsel","legal"],["Priyanka Rao","Paralegal","legal"],
-  ["Simone Achebe","Compliance Manager","legal"],["Hugo Bergstrom","Legal Operations","legal"],
+  ["Nadia Hassan","Head of Technology","tech"],["Chris Okafor","Software Engineer","tech"],
+  ["Alana Brooks","Platform Engineer","tech"],["Priyanka Rao","Data Engineer","tech"],
+  ["Simone Achebe","DevOps Lead","tech"],["Hugo Bergstrom","IT Manager","tech"],
 ];
 
 /* Fixed "now" so the demo dataset (past 90 days) is always coherent. */
@@ -657,8 +659,9 @@ function valueBarHTML(breakdown, tot){
     return `<span style="width:${pct}%; background:${v.color};"></span>`;
   }).join("")}</div>`;
 }
-function deptOptionsHTML(includeAll, selectedId){
-  const list = includeAll ? [{id:"all", name:"All Departments"}, ...DEPARTMENTS] : DEPARTMENTS;
+function deptOptionsHTML(includeAll, selectedId, source){
+  const base = source || DEPARTMENTS;
+  const list = includeAll ? [{id:"all", name:"All Departments"}, ...base] : base;
   return list.map(d => `<option value="${d.id}" ${d.id===selectedId?"selected":""}>${d.name}</option>`).join("");
 }
 
@@ -982,7 +985,7 @@ document.querySelectorAll(".nav-item[data-view]").forEach(item => {
 =========================================================== */
 document.getElementById("lbDeptSelect").innerHTML = deptOptionsHTML(true, "all");
 document.getElementById("feedDeptSelect").innerHTML = deptOptionsHTML(true, "all");
-document.getElementById("rDept").innerHTML = `<option value="" disabled selected>Select a department…</option>` + deptOptionsHTML(false, null);
+document.getElementById("rDept").innerHTML = `<option value="" disabled selected>Select a department…</option>` + deptOptionsHTML(false, null, GIVE_DEPARTMENTS);
 renderValuePicker();
 renderTokenPicker();
 validateForm();
@@ -1041,17 +1044,22 @@ function applyLiveData(rows){
   });
   if (txs.length === 0) return false;
 
-  if (Object.keys(deptMap).length === 0) deptMap["unassigned"] = "Unassigned";
-  const palette = ["#0a84ff","#30d158","#ff9f0a","#64d2ff","#bf5af2","#ff375f","#ffd60a"];
+  // Always include the canonical six departments (so filters/colors/insights
+  // show them all), then append any extra departments found in the data.
   DEPARTMENTS.length = 0;
-  Object.keys(deptMap).forEach((id, i) => DEPARTMENTS.push({ id, name: deptMap[id], color: id === "unassigned" ? "#8b8b8b" : palette[i % palette.length] }));
+  GIVE_DEPARTMENTS.forEach(d => DEPARTMENTS.push({ id: d.id, name: d.name, color: d.color }));
+  const palette = ["#ff6482","#5e5ce6","#66d4cf","#d9a441","#40c8e0","#a2845e"];
+  let pi = 0;
+  Object.keys(deptMap).forEach(id => {
+    if (!DEPARTMENTS.find(d => d.id === id)) DEPARTMENTS.push({ id, name: deptMap[id], color: id === "unassigned" ? "#8b8b8b" : palette[pi++ % palette.length] });
+  });
   PEOPLE.length = 0; Object.values(peopleByEmail).forEach(p => PEOPLE.push(p));
   TRANSACTIONS.length = 0; txs.forEach(t => TRANSACTIONS.push(t));
 
   lbDept = "all"; feedDept = "all"; lbShowAll = false; feedExpanded = false;
   document.getElementById("lbDeptSelect").innerHTML = deptOptionsHTML(true, "all");
   document.getElementById("feedDeptSelect").innerHTML = deptOptionsHTML(true, "all");
-  document.getElementById("rDept").innerHTML = `<option value="" disabled selected>Select a department…</option>` + deptOptionsHTML(false, null);
+  document.getElementById("rDept").innerHTML = `<option value="" disabled selected>Select a department…</option>` + deptOptionsHTML(false, null, GIVE_DEPARTMENTS);
   renderLeaderboard(); renderFeed(); renderInsights();
   return true;
 }
