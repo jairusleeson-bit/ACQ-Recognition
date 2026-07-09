@@ -28,7 +28,7 @@
 
   html, body{
     margin:0; padding:0; height:100%;
-    background: radial-gradient(circle at 20% -5%, #1a1a1a 0%, #080808 58%), var(--bg);
+    background: var(--bg);
     color: var(--text);
     font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
@@ -44,7 +44,7 @@
     width: 236px; flex-shrink:0; padding: 28px 18px;
     display:flex; flex-direction:column;
     border-right: 1px solid var(--border);
-    background: rgba(255,255,255,0.015);
+    background: transparent;
   }
   .brand{ display:flex; align-items:center; gap:10px; padding: 4px 8px 30px 8px; }
   .brand-mark{
@@ -83,6 +83,10 @@
   .page-header{ display:flex; justify-content:space-between; align-items:flex-end; margin-bottom: 22px; flex-wrap:wrap; gap:16px; }
   .page-title{ font-size: 36px; font-weight:800; letter-spacing:-0.02em; margin:0; }
   .page-subtitle{ font-size:13.5px; color: var(--text-dim); margin-top:6px; }
+  .data-status{ margin-top:8px; font-size:11px; font-weight:700; display:inline-flex; align-items:center; gap:6px; color: var(--text-dimmer); letter-spacing:0.02em; }
+  .data-status .sdot{ width:7px; height:7px; border-radius:50%; background: var(--text-dimmer); flex:none; }
+  .data-status.live{ color: var(--green); } .data-status.live .sdot{ background: var(--green); }
+  .data-status.sample{ color: var(--orange); } .data-status.sample .sdot{ background: var(--orange); }
 
   .header-controls{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
 
@@ -322,6 +326,7 @@
         <div>
           <h1 class="page-title">Leaderboard</h1>
           <div class="page-subtitle" id="lbSubtitle"></div>
+          <div class="data-status" id="dataStatus"></div>
         </div>
         <div class="header-controls">
           <div class="pill-group" id="lbPeriodGroup">
@@ -1075,13 +1080,24 @@ function csvToObjects(text){
   return rows.map(r => { const o = {}; head.forEach((h, i) => { if (h) o[h] = r[i]; }); return o; });
 }
 
+function setDataStatus(mode, detail){
+  const el = document.getElementById("dataStatus"); if (!el) return;
+  el.className = "data-status " + mode;
+  el.innerHTML = `<span class="sdot"></span>` + (mode === "live"
+    ? `Live data · ${detail} recognitions from the Sheet`
+    : `Showing sample data — ${detail}`);
+}
 function loadLiveData(){
   // Preferred read path: published CSV (no Apps Script dependency).
   if (SHEET_CSV_URL){
     fetch(SHEET_CSV_URL + (SHEET_CSV_URL.indexOf("?") > -1 ? "&" : "?") + "t=" + Date.now())
       .then(r => r.ok ? r.text() : Promise.reject("HTTP " + r.status))
-      .then(t => { try { applyLiveData(csvToObjects(t)); } catch(e){ console.warn("live CSV parse failed:", e); } })
-      .catch(e => console.warn("CSV fetch failed, using sample data:", e));
+      .then(t => {
+        const rows = csvToObjects(t);
+        const ok = applyLiveData(rows);
+        setDataStatus(ok ? "live" : "sample", ok ? String(rows.length) : "the sheet feed returned no usable rows");
+      })
+      .catch(e => setDataStatus("sample", "couldn't read the sheet feed (" + e + ")"));
     return;
   }
   // Fallback read path: Apps Script doGet via JSONP.
@@ -1091,16 +1107,18 @@ function loadLiveData(){
   window[cbName] = function(payload){
     done = true;
     const rows = payload && (Array.isArray(payload) ? payload : payload.data);
-    try { applyLiveData(rows || []); } catch(e){ console.warn("live data render failed:", e); }
+    try { const ok = applyLiveData(rows || []); setDataStatus(ok ? "live" : "sample", ok ? String((rows||[]).length) : "the endpoint returned no rows"); }
+    catch(e){ setDataStatus("sample", "render error (" + e + ")"); }
     cleanup();
   };
   const s = document.createElement("script");
   s.src = SHEETS_WEBAPP_URL + (SHEETS_WEBAPP_URL.indexOf("?") > -1 ? "&" : "?") + "callback=" + cbName + "&t=" + Date.now();
-  s.onerror = cleanup;
   function cleanup(){ try { delete window[cbName]; } catch(e){ window[cbName] = undefined; } if (s.parentNode) s.parentNode.removeChild(s); }
+  s.onerror = function(){ setDataStatus("sample", "couldn't reach the endpoint"); cleanup(); };
   document.head.appendChild(s);
-  setTimeout(function(){ if (!done) cleanup(); }, 9000);
+  setTimeout(function(){ if (!done){ setDataStatus("sample", "the endpoint timed out"); cleanup(); } }, 9000);
 }
+setDataStatus("sample", "loading live data…");
 loadLiveData();
 </script>
 
