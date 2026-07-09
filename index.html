@@ -806,6 +806,7 @@ function computeFormError(){
   if (!name) return "Enter the name of the person you're recognizing.";
   if (!recip) return "Enter their email.";
   if (!emailish(recip)) return "Their email doesn't look right.";
+  if (sender.toLowerCase() === recip.toLowerCase()) return "You can't recognize yourself — pick a teammate.";
   if (!dept) return "Choose the person's department.";
   if (!recogValue) return "Choose which value this recognizes.";
   if (!recogTokens) return "Select how many tokens to give.";
