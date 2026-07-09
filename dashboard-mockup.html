@@ -1,0 +1,664 @@
+<title>Shoutouts — Recognition Dashboard</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    /* neutrals — warm bias */
+    --paper: #fcfcfb;
+    --surface: #ffffff;
+    --surface-2: #f4f3f0;
+    --line: #e6e4de;
+    --line-strong: #d7d4cc;
+    --ink: #1a1a19;
+    --ink-2: #57544c;
+    --ink-3: #8b877c;
+    --primary: #1a1a19;
+    --primary-ink: #fcfcfb;
+    /* value hues (light) */
+    --v-character: #0d9488;
+    --v-candor:    #2563eb;
+    --v-greatness: #db2777;
+    --v-speed:     #d97706;
+    /* soft tints for value backgrounds */
+    --v-character-bg: #e2f2f0;
+    --v-candor-bg:    #e4ecfd;
+    --v-greatness-bg: #fbe4ef;
+    --v-speed-bg:     #fbeed8;
+    --up: #15803d;
+    --shadow: 0 1px 2px rgba(20,18,10,.04), 0 8px 24px rgba(20,18,10,.05);
+    --radius: 14px;
+    --radius-sm: 9px;
+    --font-display: "Helvetica Neue", "Arial Nova", Arial, system-ui, sans-serif;
+    --font-body: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --maxw: 1240px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #141413;
+      --surface: #1d1d1b;
+      --surface-2: #26251f;
+      --line: #302f29;
+      --line-strong: #3d3b33;
+      --ink: #f3f1ea;
+      --ink-2: #b4b0a4;
+      --ink-3: #7f7c71;
+      --primary: #f3f1ea;
+      --primary-ink: #17160f;
+      --v-character: #14b8a6;
+      --v-candor:    #3b82f6;
+      --v-greatness: #ec4899;
+      --v-speed:     #e0a327;
+      --v-character-bg: #10312d;
+      --v-candor-bg:    #16233f;
+      --v-greatness-bg: #3a1729;
+      --v-speed-bg:     #3a2c10;
+      --up: #4ade80;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 10px 30px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="light"] {
+    color-scheme: light;
+    --paper:#fcfcfb;--surface:#fff;--surface-2:#f4f3f0;--line:#e6e4de;--line-strong:#d7d4cc;
+    --ink:#1a1a19;--ink-2:#57544c;--ink-3:#8b877c;--primary:#1a1a19;--primary-ink:#fcfcfb;
+    --v-character:#0d9488;--v-candor:#2563eb;--v-greatness:#db2777;--v-speed:#d97706;
+    --v-character-bg:#e2f2f0;--v-candor-bg:#e4ecfd;--v-greatness-bg:#fbe4ef;--v-speed-bg:#fbeed8;
+    --up:#15803d;--shadow:0 1px 2px rgba(20,18,10,.04),0 8px 24px rgba(20,18,10,.05);
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper:#141413;--surface:#1d1d1b;--surface-2:#26251f;--line:#302f29;--line-strong:#3d3b33;
+    --ink:#f3f1ea;--ink-2:#b4b0a4;--ink-3:#7f7c71;--primary:#f3f1ea;--primary-ink:#17160f;
+    --v-character:#14b8a6;--v-candor:#3b82f6;--v-greatness:#ec4899;--v-speed:#e0a327;
+    --v-character-bg:#10312d;--v-candor-bg:#16233f;--v-greatness-bg:#3a1729;--v-speed-bg:#3a2c10;
+    --up:#4ade80;--shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.35);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  .tnum { font-variant-numeric: tabular-nums; }
+  .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
+  .eyebrow {
+    font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--ink-3);
+  }
+
+  /* ---------- header ---------- */
+  header {
+    position: sticky; top: 0; z-index: 20;
+    background: color-mix(in srgb, var(--paper) 88%, transparent);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .bar { display: flex; align-items: center; gap: 18px; height: 68px; }
+  .brand { display: flex; align-items: center; gap: 11px; margin-right: auto; }
+  .logo {
+    width: 34px; height: 34px; border-radius: 9px; background: var(--primary);
+    color: var(--primary-ink); display: grid; place-items: center;
+    font-family: var(--font-display); font-weight: 800; font-size: 19px;
+  }
+  .brand h1 {
+    font-family: var(--font-display); font-size: 18px; font-weight: 800;
+    letter-spacing: -.02em; margin: 0; line-height: 1;
+  }
+  .brand span { font-size: 11.5px; color: var(--ink-3); }
+  .seg {
+    display: inline-flex; background: var(--surface-2); border: 1px solid var(--line);
+    border-radius: 999px; padding: 3px;
+  }
+  .seg button {
+    border: 0; background: transparent; color: var(--ink-2); cursor: pointer;
+    font: inherit; font-size: 13px; font-weight: 600; padding: 6px 13px; border-radius: 999px;
+  }
+  .seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
+  .icon-btn {
+    width: 38px; height: 38px; border-radius: 10px; border: 1px solid var(--line);
+    background: var(--surface); color: var(--ink-2); cursor: pointer; display: grid; place-items: center;
+  }
+  .icon-btn:hover { color: var(--ink); border-color: var(--line-strong); }
+  .btn-primary {
+    border: 0; background: var(--primary); color: var(--primary-ink); cursor: pointer;
+    font: inherit; font-weight: 650; font-size: 14px; padding: 10px 17px; border-radius: 10px;
+    display: inline-flex; align-items: center; gap: 8px; box-shadow: var(--shadow);
+  }
+  .btn-primary:hover { opacity: .92; }
+  .avatar {
+    border-radius: 50%; display: grid; place-items: center; color: #fff; font-weight: 700;
+    flex: none; font-family: var(--font-display); letter-spacing: -.01em;
+  }
+  :focus-visible { outline: 2px solid var(--v-candor); outline-offset: 2px; border-radius: 6px; }
+
+  /* ---------- page ---------- */
+  .page-head { padding: 30px 0 8px; }
+  .page-head h2 {
+    font-family: var(--font-display); font-weight: 800; letter-spacing: -.03em;
+    font-size: clamp(26px, 4vw, 38px); margin: 6px 0 4px; text-wrap: balance;
+  }
+  .page-head p { color: var(--ink-2); margin: 0; max-width: 60ch; }
+
+  /* ---------- stat tiles ---------- */
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin: 24px 0; }
+  .tile {
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 18px 18px 16px; box-shadow: var(--shadow); position: relative; overflow: hidden;
+  }
+  .tile .label { display: flex; justify-content: space-between; align-items: center; }
+  .tile .num {
+    font-family: var(--font-display); font-weight: 800; letter-spacing: -.03em;
+    font-size: 40px; line-height: 1; margin: 12px 0 6px;
+  }
+  .tile .sub { font-size: 12.5px; color: var(--ink-2); }
+  .delta { display: inline-flex; align-items: center; gap: 3px; font-size: 12px; font-weight: 650; color: var(--up); }
+  .delta svg { width: 12px; height: 12px; }
+  .ring { --p: 87; width: 42px; height: 42px; }
+
+  /* ---------- layout ---------- */
+  .grid { display: grid; grid-template-columns: 1.55fr 1fr; gap: 22px; align-items: start; padding-bottom: 60px; }
+  .col { display: flex; flex-direction: column; gap: 22px; }
+  .card {
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+    box-shadow: var(--shadow);
+  }
+  .card > .head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 17px 20px; border-bottom: 1px solid var(--line);
+  }
+  .card > .head h3 { margin: 0; font-size: 15px; font-weight: 700; letter-spacing: -.01em; }
+  .card > .head .hint { font-size: 12px; color: var(--ink-3); }
+  .card .body { padding: 18px 20px 20px; }
+
+  /* ---------- value cards ---------- */
+  .values { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  .vcard {
+    border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 15px 15px 12px;
+    position: relative; background: var(--surface); overflow: hidden;
+  }
+  .vcard::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--vc); }
+  .vcard .vtop { display: flex; align-items: center; gap: 8px; }
+  .vdot { width: 9px; height: 9px; border-radius: 3px; background: var(--vc); flex: none; }
+  .vcard .vname { font-size: 12.5px; font-weight: 700; letter-spacing: -.01em; }
+  .vcard .vnum { font-family: var(--font-display); font-weight: 800; font-size: 30px; letter-spacing: -.03em; margin: 9px 0 2px; }
+  .vcard .vmeta { display: flex; justify-content: space-between; align-items: flex-end; gap: 8px; }
+  .vcard .vshare { font-size: 12px; color: var(--ink-2); }
+  .vcard .vshare b { color: var(--ink); font-weight: 700; }
+  .spark { width: 78px; height: 26px; display: block; }
+
+  /* ---------- chart ---------- */
+  .legend { display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 14px; }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--ink-2); }
+  .legend i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+  .chart { width: 100%; height: 220px; display: block; overflow: visible; }
+  .chart .axis { font-size: 10.5px; fill: var(--ink-3); }
+  .gridline { stroke: var(--line); stroke-width: 1; }
+  .barseg { cursor: pointer; transition: opacity .12s; }
+  .chart.dim .barseg:not(.hot) { opacity: .32; }
+
+  /* ---------- leaderboard ---------- */
+  .lb { display: flex; flex-direction: column; }
+  .lb-row { display: flex; align-items: center; gap: 13px; padding: 11px 0; border-bottom: 1px solid var(--line); }
+  .lb-row:last-child { border-bottom: 0; }
+  .rank { width: 20px; font-family: var(--font-display); font-weight: 800; color: var(--ink-3); font-size: 14px; text-align: center; }
+  .lb-row.top .rank { color: var(--ink); }
+  .lb-name { font-weight: 650; font-size: 14px; }
+  .lb-role { font-size: 11.5px; color: var(--ink-3); }
+  .chips { display: flex; gap: 4px; margin-left: auto; align-items: center; }
+  .chip {
+    font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 999px;
+    background: var(--cbg); color: var(--cfg); font-variant-numeric: tabular-nums;
+  }
+  .lb-total { font-family: var(--font-display); font-weight: 800; font-size: 17px; width: 34px; text-align: right; }
+
+  /* ---------- feed ---------- */
+  .filters { display: flex; flex-wrap: wrap; gap: 7px; padding: 14px 20px; border-bottom: 1px solid var(--line); }
+  .fchip {
+    border: 1px solid var(--line); background: var(--surface); color: var(--ink-2); cursor: pointer;
+    font: inherit; font-size: 12.5px; font-weight: 600; padding: 5px 12px; border-radius: 999px;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .fchip:hover { border-color: var(--line-strong); }
+  .fchip[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .fchip[aria-pressed="true"] .fdot { outline: 2px solid var(--paper); }
+  .fdot { width: 8px; height: 8px; border-radius: 3px; }
+  .feed { max-height: 720px; overflow-y: auto; }
+  .post { display: flex; gap: 13px; padding: 16px 20px; border-bottom: 1px solid var(--line); }
+  .post:last-child { border-bottom: 0; }
+  .post .pmain { min-width: 0; flex: 1; }
+  .post .phead { font-size: 13.5px; color: var(--ink-2); margin-bottom: 3px; }
+  .post .phead b { color: var(--ink); font-weight: 700; }
+  .vtag {
+    display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700;
+    padding: 2px 8px; border-radius: 999px; background: var(--vbg); color: var(--vfg);
+    letter-spacing: .01em; margin: 5px 0 7px;
+  }
+  .post .msg { font-size: 14px; line-height: 1.45; color: var(--ink); }
+  .post .pfoot { display: flex; align-items: center; gap: 14px; margin-top: 9px; color: var(--ink-3); font-size: 12px; }
+  .post .pfoot button { border: 0; background: none; color: var(--ink-3); cursor: pointer; font: inherit; font-size: 12px; display: inline-flex; gap: 4px; align-items: center; }
+  .post .pfoot button:hover { color: var(--ink); }
+
+  /* ---------- tooltip ---------- */
+  .tt {
+    position: fixed; z-index: 60; pointer-events: none; opacity: 0; transform: translateY(4px);
+    transition: opacity .1s; background: var(--ink); color: var(--paper); padding: 8px 11px;
+    border-radius: 9px; font-size: 12px; box-shadow: var(--shadow); max-width: 220px;
+  }
+  .tt.on { opacity: 1; transform: translateY(0); }
+  .tt .ttv { display: flex; align-items: center; gap: 6px; margin-top: 2px; font-variant-numeric: tabular-nums; }
+  .tt .ttv i { width: 8px; height: 8px; border-radius: 2px; }
+
+  /* ---------- modal ---------- */
+  .scrim {
+    position: fixed; inset: 0; background: rgba(15,14,9,.5); backdrop-filter: blur(3px);
+    display: none; align-items: center; justify-content: center; z-index: 80; padding: 20px;
+  }
+  .scrim.on { display: flex; }
+  .modal {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 18px; width: 100%;
+    max-width: 520px; box-shadow: 0 30px 80px rgba(0,0,0,.35); overflow: hidden;
+  }
+  .modal .mhead { padding: 20px 22px 4px; }
+  .modal h3 { font-family: var(--font-display); font-weight: 800; letter-spacing: -.02em; font-size: 21px; margin: 0; }
+  .modal .msub { color: var(--ink-2); font-size: 13.5px; margin: 4px 0 0; }
+  .mbody { padding: 16px 22px 22px; display: flex; flex-direction: column; gap: 16px; }
+  .field label { display: block; font-size: 12px; font-weight: 700; color: var(--ink-2); margin-bottom: 7px; letter-spacing: .02em; text-transform: uppercase; }
+  .field input, .field textarea {
+    width: 100%; border: 1px solid var(--line-strong); background: var(--paper); color: var(--ink);
+    border-radius: 10px; padding: 11px 13px; font: inherit; resize: none;
+  }
+  .field input:focus, .field textarea:focus { outline: 2px solid var(--v-candor); outline-offset: 0; border-color: transparent; }
+  .valpick { display: grid; grid-template-columns: repeat(2, 1fr); gap: 9px; }
+  .vopt {
+    border: 1.5px solid var(--line); border-radius: 11px; padding: 11px 12px; cursor: pointer;
+    display: flex; align-items: center; gap: 9px; background: var(--surface); text-align: left; font: inherit;
+  }
+  .vopt small { display: block; color: var(--ink-3); font-size: 11px; font-weight: 500; }
+  .vopt b { font-size: 13px; font-weight: 700; }
+  .vopt.sel { border-color: var(--vc); background: var(--vbg); }
+  .vopt .vdot { width: 12px; height: 12px; }
+  .mfoot { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 22px; border-top: 1px solid var(--line); background: var(--surface-2); }
+  .mfoot .count { font-size: 12px; color: var(--ink-3); }
+  .mfoot .actions { display: flex; gap: 9px; }
+  .btn-ghost { border: 1px solid var(--line-strong); background: transparent; color: var(--ink-2); cursor: pointer; font: inherit; font-weight: 600; font-size: 14px; padding: 9px 15px; border-radius: 10px; }
+  .btn-ghost:hover { color: var(--ink); }
+
+  .footnote { color: var(--ink-3); font-size: 12px; text-align: center; padding: 8px 0 40px; }
+
+  @media (max-width: 940px) {
+    .grid { grid-template-columns: 1fr; }
+    .stats { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 560px) {
+    .stats { grid-template-columns: 1fr 1fr; }
+    .values { grid-template-columns: 1fr; }
+    .bar .seg, .brand span { display: none; }
+    .btn-primary .txt { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<header>
+  <div class="wrap bar">
+    <div class="brand">
+      <div class="logo">S</div>
+      <div>
+        <h1>Shoutouts</h1>
+        <span>Acquisition.com · Recognition</span>
+      </div>
+    </div>
+    <div class="seg" role="group" aria-label="Time range">
+      <button aria-pressed="false">Week</button>
+      <button aria-pressed="true">Month</button>
+      <button aria-pressed="false">Quarter</button>
+    </div>
+    <button class="icon-btn" id="themeBtn" title="Toggle theme" aria-label="Toggle theme">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+    </button>
+    <button class="btn-primary" id="openCompose">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+      <span class="txt">Give a shoutout</span>
+    </button>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="page-head">
+    <div class="eyebrow">July 2026 · Company-wide</div>
+    <h2>Who's living the standard this month</h2>
+    <p>Peer recognition tied to our four values. Anyone can recognize anyone — the point is to make great behavior visible.</p>
+  </div>
+
+  <!-- stat tiles -->
+  <section class="stats" aria-label="Summary">
+    <div class="tile">
+      <div class="label"><span class="eyebrow">Shoutouts given</span></div>
+      <div class="num tnum">428</div>
+      <div class="sub"><span class="delta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M6 15l6-6 6 6"/></svg>18%</span> vs. June</div>
+    </div>
+    <div class="tile">
+      <div class="label"><span class="eyebrow">People recognized</span>
+        <svg class="ring" viewBox="0 0 42 42" aria-hidden="true">
+          <circle cx="21" cy="21" r="17" fill="none" stroke="var(--line)" stroke-width="5"/>
+          <circle cx="21" cy="21" r="17" fill="none" stroke="var(--v-character)" stroke-width="5" stroke-linecap="round"
+            stroke-dasharray="106.8" stroke-dashoffset="13.9" transform="rotate(-90 21 21)"/>
+        </svg>
+      </div>
+      <div class="num tnum">52<span style="font-size:20px;color:var(--ink-3);font-weight:700">/60</span></div>
+      <div class="sub">87% of the team recognized</div>
+    </div>
+    <div class="tile">
+      <div class="label"><span class="eyebrow">Top value</span></div>
+      <div class="num" style="font-size:26px;color:var(--v-greatness);margin-top:16px">Competitive<br>Greatness</div>
+      <div class="sub tnum">132 shoutouts · 31% of all</div>
+    </div>
+    <div class="tile">
+      <div class="label"><span class="eyebrow">Your month</span></div>
+      <div class="num tnum">9<span style="font-size:20px;color:var(--ink-3);font-weight:700"> given</span></div>
+      <div class="sub tnum">7 received · longest giver streak: 4 wks</div>
+    </div>
+  </section>
+
+  <div class="grid">
+    <!-- LEFT: analytics -->
+    <div class="col">
+      <section class="card">
+        <div class="head"><h3>Recognition by value</h3><span class="hint">this month</span></div>
+        <div class="body">
+          <div class="values" id="valueCards"></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="head"><h3>Shoutouts per week</h3><span class="hint">last 10 weeks</span></div>
+        <div class="body">
+          <div class="legend" id="legend"></div>
+          <svg class="chart" id="chart" role="img" aria-label="Stacked bar chart of shoutouts per week by value"></svg>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="head"><h3>Most recognized</h3><span class="hint">by shoutouts received</span></div>
+        <div class="body"><div class="lb" id="leaderboard"></div></div>
+      </section>
+    </div>
+
+    <!-- RIGHT: feed -->
+    <div class="col">
+      <section class="card">
+        <div class="head"><h3>Recognition feed</h3><span class="hint" id="feedCount"></span></div>
+        <div class="filters" id="filters"></div>
+        <div class="feed" id="feed"></div>
+      </section>
+    </div>
+  </div>
+
+  <div class="footnote">Interactive prototype · sample data · hover the chart, filter the feed, or try “Give a shoutout”.</div>
+</main>
+
+<!-- compose modal -->
+<div class="scrim" id="scrim" aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+    <div class="mhead">
+      <h3 id="mTitle">Give a shoutout</h3>
+      <p class="msub">Call out someone who lived one of our values. Keep it specific — what did they actually do?</p>
+    </div>
+    <div class="mbody">
+      <div class="field">
+        <label for="who">Recognize</label>
+        <input id="who" type="text" placeholder="Search a teammate…" value="Priya Nair" autocomplete="off">
+      </div>
+      <div class="field">
+        <label>For the value</label>
+        <div class="valpick" id="valpick"></div>
+      </div>
+      <div class="field">
+        <label for="msg">What they did</label>
+        <textarea id="msg" rows="3" maxlength="240" placeholder="Be specific and honest…">Caught a pricing error in the proposal an hour before it went out and flagged it directly instead of letting it slide. Saved the client relationship and told us exactly what went wrong.</textarea>
+      </div>
+    </div>
+    <div class="mfoot">
+      <span class="count" id="charCount">0 / 240</span>
+      <div class="actions">
+        <button class="btn-ghost" id="cancelBtn">Cancel</button>
+        <button class="btn-primary" id="postBtn"><span class="txt">Post shoutout</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="tt" id="tt"></div>
+
+<script>
+(() => {
+  const VALUES = {
+    character: { name: "Unimpeachable Character", short: "Character", blurb: "Did the right thing", color: "var(--v-character)", bg: "var(--v-character-bg)" },
+    candor:    { name: "Sincere Candor",          short: "Candor",    blurb: "Told the honest truth", color: "var(--v-candor)",    bg: "var(--v-candor-bg)" },
+    greatness: { name: "Competitive Greatness",   short: "Greatness", blurb: "Rose to the moment",    color: "var(--v-greatness)", bg: "var(--v-greatness-bg)" },
+    speed:     { name: "Speed",                   short: "Speed",     blurb: "Moved fast, unblocked", color: "var(--v-speed)",     bg: "var(--v-speed-bg)" },
+  };
+  const ORDER = ["character", "candor", "greatness", "speed"];
+  const totals = { character: 96, candor: 88, greatness: 132, speed: 112 };
+  const grandTotal = ORDER.reduce((s, k) => s + totals[k], 0);
+  const topPerson = { character: "Marcus Webb", candor: "Priya Nair", greatness: "Sofia Reyes", speed: "Devin Park" };
+  const trend = { // 10 weeks, older → newer
+    character: [6, 7, 8, 7, 9, 10, 9, 11, 12, 13],
+    candor:    [5, 6, 6, 8, 7, 9, 10, 9, 11, 12],
+    greatness: [8, 9, 11, 10, 12, 13, 14, 15, 16, 18],
+    speed:     [7, 8, 8, 9, 10, 11, 12, 13, 14, 15],
+  };
+
+  const AV = ["#0d9488","#2563eb","#db2777","#d97706","#7c3aed","#0369a1","#b45309","#be123c"];
+  const avatar = (name, size) => {
+    const init = name.split(" ").map(w => w[0]).slice(0, 2).join("");
+    let h = 0; for (const c of name) h = (h * 31 + c.charCodeAt(0)) | 0;
+    const bg = AV[Math.abs(h) % AV.length];
+    return `<div class="avatar" style="width:${size}px;height:${size}px;background:${bg};font-size:${size*0.4}px">${init}</div>`;
+  };
+
+  /* ---- value cards ---- */
+  const vc = document.getElementById("valueCards");
+  vc.innerHTML = ORDER.map(k => {
+    const v = VALUES[k], n = totals[k], share = Math.round(n / grandTotal * 100);
+    const s = trend[k], mn = Math.min(...s), mx = Math.max(...s), w = 78, h = 26;
+    const pts = s.map((d, i) => [ (i / (s.length - 1)) * w, h - ((d - mn) / (mx - mn || 1)) * (h - 4) - 2 ]);
+    const line = pts.map((p, i) => (i ? "L" : "M") + p[0].toFixed(1) + " " + p[1].toFixed(1)).join(" ");
+    const end = pts[pts.length - 1];
+    return `<div class="vcard" style="--vc:${v.color}">
+      <div class="vtop"><span class="vdot"></span><span class="vname">${v.name}</span></div>
+      <div class="vnum tnum" style="color:${v.color}">${n}</div>
+      <div class="vmeta">
+        <div class="vshare"><b>${share}%</b> of shoutouts · top: ${topPerson[k].split(" ")[0]}</div>
+        <svg class="spark" viewBox="0 0 ${w} ${h}"><path d="${line}" fill="none" stroke="${v.color}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="${end[0].toFixed(1)}" cy="${end[1].toFixed(1)}" r="2.2" fill="${v.color}"/></svg>
+      </div>
+    </div>`;
+  }).join("");
+
+  /* ---- legend ---- */
+  document.getElementById("legend").innerHTML = ORDER.map(k =>
+    `<span><i style="background:${VALUES[k].color}"></i>${VALUES[k].short}</span>`).join("");
+
+  /* ---- stacked bar chart ---- */
+  const svg = document.getElementById("chart");
+  const CW = 560, CH = 220, padL = 26, padB = 22, padT = 8;
+  const weeks = trend.character.length;
+  const stackMax = Math.max(...Array.from({ length: weeks }, (_, i) => ORDER.reduce((s, k) => s + trend[k][i], 0)));
+  const yMax = Math.ceil(stackMax / 10) * 10;
+  const plotW = CW - padL, plotH = CH - padB - padT;
+  const x = i => padL + (i + 0.5) * (plotW / weeks);
+  const bw = (plotW / weeks) * 0.62;
+  const y = v => padT + plotH - (v / yMax) * plotH;
+  let g = "";
+  for (let t = 0; t <= yMax; t += Math.max(10, Math.round(yMax / 4 / 10) * 10)) {
+    g += `<line class="gridline" x1="${padL}" y1="${y(t)}" x2="${CW}" y2="${y(t)}"/>
+          <text class="axis" x="${padL - 7}" y="${y(t) + 3}" text-anchor="end">${t}</text>`;
+  }
+  const now = new Date(2026, 6, 9);
+  for (let i = 0; i < weeks; i++) {
+    let acc = 0;
+    ORDER.forEach(k => {
+      const val = trend[k][i];
+      const y0 = y(acc), y1 = y(acc + val);
+      const hgt = Math.max(0, y0 - y1 - 2); // 2px surface gap
+      g += `<rect class="barseg" data-w="${i}" data-k="${k}" x="${(x(i) - bw / 2).toFixed(1)}" y="${y1.toFixed(1)}" width="${bw.toFixed(1)}" height="${hgt.toFixed(1)}" rx="2.5" fill="${VALUES[k].color}"/>`;
+      acc += val;
+    });
+    const d = new Date(now); d.setDate(d.getDate() - (weeks - 1 - i) * 7);
+    const lbl = (i % 2 === 0 || i === weeks - 1) ? `${d.getMonth() + 1}/${d.getDate()}` : "";
+    g += `<text class="axis" x="${x(i)}" y="${CH - 6}" text-anchor="middle">${lbl}</text>`;
+  }
+  svg.setAttribute("viewBox", `0 0 ${CW} ${CH}`);
+  svg.innerHTML = g;
+
+  /* ---- chart hover tooltip ---- */
+  const tt = document.getElementById("tt");
+  function showTT(html, e) {
+    tt.innerHTML = html; tt.classList.add("on");
+    const r = tt.getBoundingClientRect();
+    let left = e.clientX + 14, top = e.clientY - r.height - 10;
+    if (left + r.width > innerWidth - 8) left = e.clientX - r.width - 14;
+    if (top < 8) top = e.clientY + 16;
+    tt.style.left = left + "px"; tt.style.top = top + "px";
+  }
+  const hideTT = () => tt.classList.remove("on");
+  svg.querySelectorAll(".barseg").forEach(seg => {
+    seg.addEventListener("mousemove", e => {
+      const i = +seg.dataset.w;
+      svg.classList.add("dim");
+      svg.querySelectorAll(`.barseg[data-w="${i}"]`).forEach(s => s.classList.add("hot"));
+      const d = new Date(now); d.setDate(d.getDate() - (weeks - 1 - i) * 7);
+      const wk = `Week of ${d.getMonth() + 1}/${d.getDate()}`;
+      const tot = ORDER.reduce((s, k) => s + trend[k][i], 0);
+      const rows = ORDER.map(k => `<div class="ttv"><i style="background:${VALUES[k].color}"></i>${VALUES[k].short}<b style="margin-left:auto;padding-left:12px">${trend[k][i]}</b></div>`).join("");
+      showTT(`<b>${wk}</b> · ${tot} total${rows}`, e);
+    });
+    seg.addEventListener("mouseleave", () => {
+      hideTT(); svg.classList.remove("dim");
+      svg.querySelectorAll(".hot").forEach(s => s.classList.remove("hot"));
+    });
+  });
+
+  /* ---- leaderboard ---- */
+  const people = [
+    { name: "Sofia Reyes",  role: "Sales · Enterprise", v: { character: 4, candor: 3, greatness: 12, speed: 5 } },
+    { name: "Priya Nair",   role: "Ops · Delivery",     v: { character: 5, candor: 9, greatness: 4, speed: 6 } },
+    { name: "Devin Park",   role: "Engineering",        v: { character: 3, candor: 4, greatness: 5, speed: 11 } },
+    { name: "Marcus Webb",  role: "Finance",            v: { character: 10, candor: 3, greatness: 2, speed: 3 } },
+    { name: "Alana Brooks", role: "Customer Success",   v: { character: 4, candor: 5, greatness: 6, speed: 2 } },
+    { name: "Tomás Rivera", role: "Marketing",          v: { character: 2, candor: 3, greatness: 7, speed: 4 } },
+  ].map(p => ({ ...p, total: ORDER.reduce((s, k) => s + p.v[k], 0) }))
+   .sort((a, b) => b.total - a.total);
+
+  document.getElementById("leaderboard").innerHTML = people.map((p, i) => {
+    const top2 = ORDER.map(k => ({ k, n: p.v[k] })).sort((a, b) => b.n - a.n).slice(0, 2);
+    const chips = top2.map(c => `<span class="chip" style="--cbg:${VALUES[c.k].bg};--cfg:${VALUES[c.k].color}">${VALUES[c.k].short} ${c.n}</span>`).join("");
+    return `<div class="lb-row ${i < 3 ? "top" : ""}">
+      <span class="rank">${i + 1}</span>
+      ${avatar(p.name, 34)}
+      <div><div class="lb-name">${p.name}</div><div class="lb-role">${p.role}</div></div>
+      <div class="chips">${chips}</div>
+      <span class="lb-total tnum">${p.total}</span>
+    </div>`;
+  }).join("");
+
+  /* ---- feed ---- */
+  const posts = [
+    { from: "Jordan Ellis", to: "Sofia Reyes", k: "greatness", t: "2h", msg: "Closed the Halvorsen renewal after it looked dead twice. Didn't flinch, kept re-working the offer until it landed. That's the bar.", likes: 24 },
+    { from: "Maya Chen", to: "Priya Nair", k: "candor", t: "4h", msg: "Told me directly in the retro that my rollout plan skipped the support team — uncomfortable to hear, exactly right, and she said it kindly.", likes: 31 },
+    { from: "Ben Farley", to: "Devin Park", k: "speed", t: "5h", msg: "Prod was throwing errors at 7am. Devin had a fix shipped and verified before standup. No drama, just handled.", likes: 19 },
+    { from: "Grace Lin", to: "Marcus Webb", k: "character", t: "Yesterday", msg: "Found a $40k billing error that was in our favor and flagged it to the client himself. Nobody would've known. He did it anyway.", likes: 47 },
+    { from: "Nadia Hassan", to: "Alana Brooks", k: "candor", t: "Yesterday", msg: "Gave a churning account the real story instead of a comfortable one, and they stayed because of it. Honesty as a retention strategy.", likes: 22 },
+    { from: "Chris Okafor", to: "Tomás Rivera", k: "greatness", t: "2d", msg: "Volunteered for the launch nobody wanted, then made it the best one of the quarter. Turned a chore into a win.", likes: 15 },
+    { from: "Sofia Reyes", to: "Devin Park", k: "speed", t: "2d", msg: "Asked for a dashboard 'sometime this week.' Had it in my inbox in 40 minutes, cleaner than I'd have specced it.", likes: 12 },
+    { from: "Priya Nair", to: "Grace Lin", k: "character", t: "3d", msg: "Owned a missed deadline in front of the whole client team instead of pointing at the vendor. Took the hit, kept the trust.", likes: 28 },
+  ];
+
+  const feed = document.getElementById("feed");
+  const feedCount = document.getElementById("feedCount");
+  let filter = "all";
+  function renderFeed() {
+    const list = posts.filter(p => filter === "all" || p.k === filter);
+    feedCount.textContent = `${list.length} this month`;
+    feed.innerHTML = list.map(p => {
+      const v = VALUES[p.k];
+      return `<div class="post">
+        ${avatar(p.from, 40)}
+        <div class="pmain">
+          <div class="phead"><b>${p.from}</b> recognized <b>${p.to}</b></div>
+          <span class="vtag" style="--vbg:${v.bg};--vfg:${v.color}"><span class="vdot" style="background:${v.color};width:7px;height:7px"></span>${v.name}</span>
+          <div class="msg">${p.msg}</div>
+          <div class="pfoot">
+            <button><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-6 0v4H5l1.5 10h11L19 9z"/></svg>${p.likes}</button>
+            <button><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Add on</button>
+            <span style="margin-left:auto">${p.t}</span>
+          </div>
+        </div>
+      </div>`;
+    }).join("");
+  }
+
+  /* ---- feed filters ---- */
+  const filters = document.getElementById("filters");
+  const fdata = [["all", "All"], ...ORDER.map(k => [k, VALUES[k].short])];
+  filters.innerHTML = fdata.map(([k, lbl]) =>
+    `<button class="fchip" data-k="${k}" aria-pressed="${k === "all"}">
+      ${k === "all" ? "" : `<span class="fdot" style="background:${VALUES[k].color}"></span>`}${lbl}</button>`).join("");
+  filters.addEventListener("click", e => {
+    const b = e.target.closest(".fchip"); if (!b) return;
+    filter = b.dataset.k;
+    filters.querySelectorAll(".fchip").forEach(c => c.setAttribute("aria-pressed", c === b));
+    renderFeed();
+  });
+  renderFeed();
+
+  /* ---- time-range segment (cosmetic) ---- */
+  document.querySelector(".seg").addEventListener("click", e => {
+    const b = e.target.closest("button"); if (!b) return;
+    document.querySelectorAll(".seg button").forEach(x => x.setAttribute("aria-pressed", x === b));
+  });
+
+  /* ---- compose modal ---- */
+  const scrim = document.getElementById("scrim");
+  const valpick = document.getElementById("valpick");
+  let chosen = "candor";
+  valpick.innerHTML = ORDER.map(k => {
+    const v = VALUES[k];
+    return `<button type="button" class="vopt ${k === chosen ? "sel" : ""}" data-k="${k}" style="--vc:${v.color};--vbg:${v.bg}">
+      <span class="vdot" style="background:${v.color}"></span>
+      <span><b>${v.short}</b><small>${v.blurb}</small></span></button>`;
+  }).join("");
+  valpick.addEventListener("click", e => {
+    const b = e.target.closest(".vopt"); if (!b) return;
+    chosen = b.dataset.k;
+    valpick.querySelectorAll(".vopt").forEach(o => o.classList.toggle("sel", o === b));
+  });
+  const msg = document.getElementById("msg"), charCount = document.getElementById("charCount");
+  const upd = () => charCount.textContent = `${msg.value.length} / 240`;
+  msg.addEventListener("input", upd); upd();
+
+  const open = () => { scrim.classList.add("on"); scrim.setAttribute("aria-hidden", "false"); document.getElementById("who").focus(); };
+  const close = () => { scrim.classList.remove("on"); scrim.setAttribute("aria-hidden", "true"); };
+  document.getElementById("openCompose").addEventListener("click", open);
+  document.getElementById("cancelBtn").addEventListener("click", close);
+  scrim.addEventListener("click", e => { if (e.target === scrim) close(); });
+  document.addEventListener("keydown", e => { if (e.key === "Escape") close(); });
+  document.getElementById("postBtn").addEventListener("click", () => {
+    const who = document.getElementById("who").value.trim() || "a teammate";
+    posts.unshift({ from: "You", to: who, k: chosen, t: "just now", msg: msg.value.trim() || "…", likes: 0 });
+    filter = "all";
+    filters.querySelectorAll(".fchip").forEach(c => c.setAttribute("aria-pressed", c.dataset.k === "all"));
+    renderFeed(); close();
+    feed.scrollTop = 0;
+  });
+
+  /* ---- theme toggle ---- */
+  document.getElementById("themeBtn").addEventListener("click", () => {
+    const cur = document.documentElement.getAttribute("data-theme");
+    const isDark = cur ? cur === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+    document.documentElement.setAttribute("data-theme", isDark ? "light" : "dark");
+  });
+})();
+</script>
