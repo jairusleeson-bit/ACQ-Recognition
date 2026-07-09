@@ -367,8 +367,7 @@
           </div>
           <div>
             <div class="field-label">Recognize (name) <span class="req">*</span></div>
-            <input id="rName" type="text" list="peopleList" autocomplete="off" placeholder="Start typing a teammate's name…" />
-            <datalist id="peopleList"></datalist>
+            <input id="rName" type="text" autocomplete="off" placeholder="Type the teammate's name…" />
           </div>
           <div>
             <div class="field-label">Their email <span class="req">*</span></div>
@@ -785,9 +784,6 @@ function renderTokenPicker(){
   el.querySelectorAll(".token-btn").forEach(b => b.addEventListener("click", () => { recogTokens = +b.dataset.tokens; renderTokenPicker(); validateForm(); }));
 }
 
-function buildPeopleDatalist(){
-  document.getElementById("peopleList").innerHTML = PEOPLE.map(p => `<option value="${p.name}"></option>`).join("");
-}
 // When the typed name matches a known teammate, auto-fill their email + department.
 function onNameInput(){
   const raw = document.getElementById("rName").value.trim();
@@ -977,7 +973,6 @@ document.querySelectorAll(".nav-item[data-view]").forEach(item => {
 document.getElementById("lbDeptSelect").innerHTML = deptOptionsHTML(true, "all");
 document.getElementById("feedDeptSelect").innerHTML = deptOptionsHTML(true, "all");
 document.getElementById("rDept").innerHTML = `<option value="" disabled selected>Select a department…</option>` + deptOptionsHTML(false, null);
-buildPeopleDatalist();
 renderValuePicker();
 renderTokenPicker();
 validateForm();
