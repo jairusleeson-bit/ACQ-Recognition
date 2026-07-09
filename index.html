@@ -441,7 +441,7 @@
 const SHEETS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzGlV7ccPvOw8lhcxQZUJzTFiEHo7HqlP-jstD8uJhY-D3FVcvn1SUAN6qcpSgrD_je/exec";
 // Reads: "Publish to web → CSV" link for the Sheet. Preferred over the Apps
 // Script doGet because it needs no deployment and no CORS/JSONP workarounds.
-const SHEET_CSV_URL = "";
+const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR22rXDRJcQgpEekXT4V3HLqIedKETvxiCjkFTEJEs9HIwPfEDGQ16TSVO3zkBM4Q-7DfkE5Icv-S0p/pub?output=csv";
 function postToSheet(row){
   if (!SHEETS_WEBAPP_URL) return;
   fetch(SHEETS_WEBAPP_URL, {
