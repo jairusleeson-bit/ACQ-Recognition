@@ -456,13 +456,27 @@ const emptyBreakdown = () => Object.fromEntries(VALUES.map(v => [v.key, 0]));
 function valueByKey(key){ return VALUES.find(v => v.key === key); }
 
 const DEPARTMENTS = [
-  { id: "advisory", name: "Advisory Practice",      color: "#0a84ff" },
-  { id: "events",   name: "Events Team",            color: "#ff375f" },
-  { id: "finance",  name: "Finance",                color: "#30d158" },
-  { id: "people",   name: "People Team",            color: "#bf5af2" },
-  { id: "media",    name: "Media Department",       color: "#ff9f0a" },
-  { id: "devops",   name: "Dev Ops / Engineering",  color: "#64d2ff" },
-  { id: "sales",    name: "Sales Team",             color: "#ffd60a" },
+  { id: "advisory",        name: "Advisory",              color: "#0a84ff" },
+  { id: "advisory-l1",     name: "Advisory L1",           color: "#4aa3ff" },
+  { id: "advisory-l2",     name: "Advisory L2",           color: "#7dbcff" },
+  { id: "advisory-l3",     name: "Advisory L3",           color: "#a9d4ff" },
+  { id: "events",          name: "Events",                color: "#ff375f" },
+  { id: "sales",           name: "Sales",                 color: "#ffd60a" },
+  { id: "client-success",  name: "Client Success",        color: "#30d158" },
+  { id: "vantage",         name: "Vantage",               color: "#64d2ff" },
+  { id: "book",            name: "Book",                  color: "#ac8e68" },
+  { id: "media",           name: "Media",                 color: "#ff9f0a" },
+  { id: "marketing",       name: "Marketing",             color: "#ff6482" },
+  { id: "facilities",      name: "Facilities",            color: "#98989d" },
+  { id: "security",        name: "Security",              color: "#ff453a" },
+  { id: "leadership",      name: "Leadership",            color: "#bf5af2" },
+  { id: "family-office",   name: "Family Office",         color: "#5e5ce6" },
+  { id: "administration",  name: "Administration",        color: "#66d4cf" },
+  { id: "exec-protection", name: "Executive Protection",  color: "#d9a441" },
+  { id: "finance",         name: "Finance",               color: "#2fb8a0" },
+  { id: "people",          name: "People",                color: "#da8fff" },
+  { id: "legal",           name: "Legal",                 color: "#7f8fa6" },
+  { id: "technology",      name: "Technology",            color: "#32c5ff" },
 ];
 
 const MESSAGES = {
@@ -498,32 +512,43 @@ const MESSAGES = {
 
 const ROSTER = [
   ["Elena Marsh","Head of Advisory","advisory"],["Derek Voss","Senior Advisor","advisory"],
-  ["Priya Nandan","Advisor","advisory"],["Oliver Kane","Advisory Associate","advisory"],
-  ["Sofia Reyes","Client Advisor","advisory"],
+  ["Priya Nandan","Advisor, L1","advisory-l1"],["Oliver Kane","Advisor, L1","advisory-l1"],["Sofia Reyes","Advisor, L1","advisory-l1"],
+  ["Marcus Webb","Advisor, L2","advisory-l2"],["Talia Grant","Advisor, L2","advisory-l2"],
+  ["Jonah Pierce","Advisor, L3","advisory-l3"],["Nadia Okafor","Advisor, L3","advisory-l3"],
 
-  ["Marcus Webb","Head of Events","events"],["Talia Grant","Event Producer","events"],
-  ["Jonah Pierce","Events Coordinator","events"],["Nadia Okafor","Event Manager","events"],
-  ["Riley Sanders","Experience Lead","events"],
+  ["Riley Sanders","Head of Events","events"],["Victor Lindqvist","Event Producer","events"],
 
-  ["Victor Lindqvist","CFO","finance"],["Camille Doyle","Controller","finance"],
-  ["Amir Hassan","FP&A Analyst","finance"],["Beatrice Cho","Accounting Manager","finance"],
-  ["Nathaniel Ross","Finance Associate","finance"],
+  ["Diego Salazar","VP of Sales","sales"],["Fiona Whitcombe","Sales Director","sales"],["Kwame Osei","Account Executive","sales"],
 
-  ["Yusuf Adeyemi","Head of People","people"],["Harper Lin","HR Business Partner","people"],
-  ["Desmond Wallace","Talent Partner","people"],["Ingrid Solberg","People Ops Manager","people"],
-  ["Miles Thatcher","Recruiter","people"],["Jairus Leeson","Chief of Staff","people"],
+  ["Lucia Ferraro","Head of Client Success","client-success"],["Trent Michaels","Client Success Manager","client-success"],
 
-  ["Zoe Callahan","Head of Media","media"],["Theo Brannigan","Creative Director","media"],
-  ["Layla Farsi","Content Producer","media"],["Gabriel Nunes","Video Editor","media"],
-  ["Wren Ashby","Media Strategist","media"],
+  ["Camille Doyle","Head of Vantage","vantage"],["Amir Hassan","Vantage Analyst","vantage"],
 
-  ["Priyanka Rao","Head of Engineering","devops"],["Connor Blake","DevOps Lead","devops"],
-  ["Simone Achebe","Software Engineer","devops"],["Hugo Bergstrom","IT Manager","devops"],
-  ["Ava Kimura","Platform Engineer","devops"],
+  ["Beatrice Cho","Head of Book","book"],["Nathaniel Ross","Book Associate","book"],
 
-  ["Diego Salazar","VP of Sales","sales"],["Fiona Whitcombe","Sales Director","sales"],
-  ["Kwame Osei","Account Executive","sales"],["Lucia Ferraro","Sales Manager","sales"],
-  ["Trent Michaels","SDR","sales"],
+  ["Zoe Callahan","Head of Media","media"],["Theo Brannigan","Creative Director","media"],["Layla Farsi","Content Producer","media"],
+
+  ["Gabriel Nunes","Head of Marketing","marketing"],["Wren Ashby","Marketing Strategist","marketing"],
+
+  ["Hugo Bergstrom","Facilities Manager","facilities"],["Ava Kimura","Facilities Coordinator","facilities"],
+
+  ["Connor Blake","Head of Security","security"],["Simone Achebe","Security Analyst","security"],
+
+  ["Jairus Leeson","Chief of Staff","leadership"],["Yusuf Adeyemi","Chief Operating Officer","leadership"],
+
+  ["Harper Lin","Family Office Director","family-office"],["Desmond Wallace","Family Office Associate","family-office"],
+
+  ["Ingrid Solberg","Office Manager","administration"],["Miles Thatcher","Executive Assistant","administration"],
+
+  ["Priyanka Rao","Protection Lead","exec-protection"],["Roman Vasquez","Protection Specialist","exec-protection"],
+
+  ["Grace Lin","CFO","finance"],["Ben Farley","Controller","finance"],
+
+  ["Maya Chen","Head of People","people"],["Jordan Ellis","People Ops Manager","people"],
+
+  ["Alana Brooks","General Counsel","legal"],["Chris Okafor","Legal Counsel","legal"],
+
+  ["Nadia Hassan","Head of Technology","technology"],["Devin Park","Software Engineer","technology"],
 ];
 
 /* Fixed "now" so the demo dataset (past 90 days) is always coherent. */
