@@ -439,6 +439,9 @@
    See apps-script.gs for the script + deploy steps.
 =========================================================== */
 const SHEETS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzGlV7ccPvOw8lhcxQZUJzTFiEHo7HqlP-jstD8uJhY-D3FVcvn1SUAN6qcpSgrD_je/exec";
+// Reads: "Publish to web → CSV" link for the Sheet. Preferred over the Apps
+// Script doGet because it needs no deployment and no CORS/JSONP workarounds.
+const SHEET_CSV_URL = "";
 function postToSheet(row){
   if (!SHEETS_WEBAPP_URL) return;
   fetch(SHEETS_WEBAPP_URL, {
@@ -1047,7 +1050,41 @@ function applyLiveData(rows){
   renderLeaderboard(); renderFeed(); renderInsights();
   return true;
 }
+// Minimal, quote-aware CSV parser (notes may contain commas/quotes/newlines).
+function parseCSV(text){
+  const rows = []; let row = [], field = "", i = 0, inQ = false;
+  while (i < text.length){
+    const c = text[i];
+    if (inQ){
+      if (c === '"'){ if (text[i+1] === '"'){ field += '"'; i += 2; continue; } inQ = false; i++; continue; }
+      field += c; i++; continue;
+    }
+    if (c === '"'){ inQ = true; i++; continue; }
+    if (c === ','){ row.push(field); field = ""; i++; continue; }
+    if (c === '\r'){ i++; continue; }
+    if (c === '\n'){ row.push(field); rows.push(row); row = []; field = ""; i++; continue; }
+    field += c; i++;
+  }
+  if (field.length || row.length){ row.push(field); rows.push(row); }
+  return rows;
+}
+function csvToObjects(text){
+  const rows = parseCSV(text).filter(r => r.some(c => String(c).trim() !== ""));
+  if (rows.length < 2) return [];
+  const head = rows.shift().map(h => String(h).trim());
+  return rows.map(r => { const o = {}; head.forEach((h, i) => { if (h) o[h] = r[i]; }); return o; });
+}
+
 function loadLiveData(){
+  // Preferred read path: published CSV (no Apps Script dependency).
+  if (SHEET_CSV_URL){
+    fetch(SHEET_CSV_URL + (SHEET_CSV_URL.indexOf("?") > -1 ? "&" : "?") + "t=" + Date.now())
+      .then(r => r.ok ? r.text() : Promise.reject("HTTP " + r.status))
+      .then(t => { try { applyLiveData(csvToObjects(t)); } catch(e){ console.warn("live CSV parse failed:", e); } })
+      .catch(e => console.warn("CSV fetch failed, using sample data:", e));
+    return;
+  }
+  // Fallback read path: Apps Script doGet via JSONP.
   if (!SHEETS_WEBAPP_URL) return;
   const cbName = "__acqLive";
   let done = false;
