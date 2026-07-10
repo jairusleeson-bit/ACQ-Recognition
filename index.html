@@ -443,10 +443,10 @@
    empty to run as a local demo (nothing is sent anywhere).
    See apps-script.gs for the script + deploy steps.
 =========================================================== */
-const SHEETS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzGlV7ccPvOw8lhcxQZUJzTFiEHo7HqlP-jstD8uJhY-D3FVcvn1SUAN6qcpSgrD_je/exec";
+const SHEETS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycby7w2h_1TxCguSs0827scRaDUv8CKSGY9u78IE3FlV_Vrg9VkmZE8zKLb5q8gL-O0sU/exec";
 // Reads: "Publish to web → CSV" link for the Sheet. Preferred over the Apps
 // Script doGet because it needs no deployment and no CORS/JSONP workarounds.
-const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR22rXDRJcQgpEekXT4V3HLqIedKETvxiCjkFTEJEs9HIwPfEDGQ16TSVO3zkBM4Q-7DfkE5Icv-S0p/pub?output=csv";
+const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTiUAc5PR3JYIowF2-T7-Skl2opKWtwKB8NoCc5pDgh3JK5024TDArcnf_FlbBoZSMUUpDTcUtc0m57/pub?output=csv";
 function postToSheet(row){
   if (!SHEETS_WEBAPP_URL) return;
   fetch(SHEETS_WEBAPP_URL, {
