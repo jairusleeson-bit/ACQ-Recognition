@@ -1,5 +1,0 @@
-# One email per line. Lines starting with # are ignored.
-francesco.albe@acquisition.com
-jorge.gonzalez@acquisition.com
-kelsey.romero@acquisition.com
-jairus.leeson@acquisition.com
