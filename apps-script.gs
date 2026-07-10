@@ -1,20 +1,24 @@
 /**
- * ACQ Recognition — Google Sheets capture endpoint
+ * ACQ Recognition — Google Sheets capture endpoint + Slack notifier
  * ---------------------------------------------------------------------------
- * doPost  — appends each recognition submitted from the dashboard.
+ * doPost  — appends each recognition submitted from the dashboard, then DMs
+ *           the recognized person on Slack.
  * doGet   — returns all rows as JSON (JSONP via ?callback=) for the dashboard.
  *
  * DEPLOY (this is what fixes "only Jairus can submit"):
  *   Deploy → New deployment → Web app
  *     Execute as:      Me                <- always writes as the owner
  *     Who has access:  Anyone            <- anyone can submit, no login
- *   Copy the /exec URL.
+ *   Copy the /exec URL and paste it into SHEETS_WEBAPP_URL in index.html.
  *
- * (The Slack DM notifier is intentionally left out for now to keep writes
- *  simple and reliable; it can be re-added once the core is stable.)
+ * SLACK: set a Script Property named SLACK_BOT_TOKEN (Project Settings →
+ *   Script Properties) to your bot token (xoxb-…). The token needs the
+ *   users:lookupByEmail and chat:write scopes. Without it, writes still work
+ *   and the Slack DM is simply skipped.
  */
 
-var SHEET_ID = '1kWVR3RoN2Al0v3hvgc-3nI-Ne9F61mf665LOUeSLl5M';
+var SHEET_ID = '1cInQmvvXQuAa8pwZFnAbj7BFnPbhlg1VIdkuqIKAY2k';
+var DASHBOARD_URL = 'https://jairusleeson-bit.github.io/ACQ-Recognition/';
 
 var FIELD_TO_HEADER = {
   firstName:      'First Name',
@@ -48,10 +52,40 @@ function doPost(e) {
     } else {
       sheet.getRange(sheet.getLastRow() + 1, 1, 1, row.length).setValues([row]);
     }
+    notifyRecipient_(data);
     return json_({ ok: true });
   } catch (err) {
     return json_({ ok: false, error: String(err) });
   }
+}
+
+function notifyRecipient_(data) {
+  try {
+    var token = PropertiesService.getScriptProperties().getProperty('SLACK_BOT_TOKEN');
+    if (!token || !data.recipientEmail) return;
+    var look = UrlFetchApp.fetch('https://slack.com/api/users.lookupByEmail?email=' + encodeURIComponent(data.recipientEmail),
+      { method: 'get', headers: { Authorization: 'Bearer ' + token }, muteHttpExceptions: true });
+    var user = JSON.parse(look.getContentText());
+    if (!user || !user.ok || !user.user) return;
+    var uid = user.user.id;
+    var name = String(data.firstName || '').trim() || 'there';
+    var body = '*' + (data.value || 'Recognition') + '*'
+      + (data.tokens ? '  ·  ' + data.tokens + ' tokens' : '')
+      + (data.note ? '\n\n"' + data.note + '"' : '')
+      + (data.senderEmail ? '\n\n— from ' + data.senderEmail : '');
+    UrlFetchApp.fetch('https://slack.com/api/chat.postMessage', {
+      method: 'post', contentType: 'application/json',
+      headers: { Authorization: 'Bearer ' + token }, muteHttpExceptions: true,
+      payload: JSON.stringify({
+        channel: uid,
+        text: name + ', you were just recognized for ' + (data.value || 'living the values') + '!',
+        blocks: [
+          { type: 'section', text: { type: 'mrkdwn', text: '🎉 *' + name + ', you were just recognized!*\n\n' + body } },
+          { type: 'actions', elements: [{ type: 'button', text: { type: 'plain_text', text: 'Open the board' }, url: DASHBOARD_URL }] }
+        ]
+      })
+    });
+  } catch (err) {}
 }
 
 function doGet(e) {
