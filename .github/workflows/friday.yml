@@ -1,0 +1,18 @@
+name: Friday Recognition
+
+on:
+  schedule:
+    # 20:00 UTC on Fridays = 1:00 PM Las Vegas during summer (PDT).
+    # In winter (PST) switch this to '0 21 * * 5' to stay at 1 PM.
+    - cron: '0 20 * * 5'
+  workflow_dispatch: {}   # lets you run it on demand from the Actions tab
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Send weekly recognition DMs
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+        run: bash send.sh
