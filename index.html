@@ -708,15 +708,17 @@ function renderLeaderboard(){
     </div>`;
   }).join("");
 
-  // Podium (top 3)
-  const top3 = active.slice(0,3);
+  // Podium only when there are at least 3 people with recognition;
+  // otherwise everyone shows in the list below (from rank 1).
+  const podiumN = active.length >= 3 ? 3 : 0;
   const podiumEl = document.getElementById("lbPodium");
-  if (top3.length < 3){
+  if (podiumN === 0){
     podiumEl.style.display = "none";
+    podiumEl.innerHTML = "";
   } else {
     podiumEl.style.display = "grid";
     const crowns = ["🥇","🥈","🥉"];
-    podiumEl.innerHTML = top3.map((p, idx) => {
+    podiumEl.innerHTML = active.slice(0, 3).map((p, idx) => {
       const person = p.person, dept = deptById(person.dept);
       return `
         <div class="podium-card rank-${idx+1}">
@@ -733,9 +735,10 @@ function renderLeaderboard(){
     }).join("");
   }
 
-  // Ranked list (rank 4+), capped at top 10 unless expanded
-  const rest = active.slice(3);
-  const visible = lbShowAll ? rest : rest.slice(0, LB_INITIAL - 3);
+  // Ranked list — everyone below the podium (or everyone, if no podium).
+  const rest = active.slice(podiumN);
+  const initialCount = LB_INITIAL - podiumN;
+  const visible = lbShowAll ? rest : rest.slice(0, initialCount);
   const bodyEl = document.getElementById("lbListBody");
   if (active.length === 0){
     bodyEl.innerHTML = `<div class="empty-state">No recognition in this range yet.</div>`;
@@ -746,18 +749,18 @@ function renderLeaderboard(){
       const pill = tv ? `<span class="val-pill" style="background:${tv.color}22;color:${tv.color}"><span class="dot" style="background:${tv.color}"></span>${tv.label}</span>` : "—";
       return `
         <div class="row">
-          <div class="rank-num">${idx+4}</div>
+          <div class="rank-num">${idx + podiumN + 1}</div>
           <div class="person">${avatarHTML(person,36)}<div class="person-info"><div class="person-name">${person.name}</div><div class="person-title">${person.title || ""}</div></div></div>
           <div class="dept-tag" style="color:${dept.color}">${dept.name}</div>
           <div>${pill}</div>
           <div class="score-cell">${p.total}</div>
         </div>`;
-    }).join("") || `<div class="empty-state">Only the podium has recognition so far.</div>`;
+    }).join("");
   }
 
   // Show more / less
   const btn = document.getElementById("lbShowMore");
-  if (rest.length > (LB_INITIAL - 3)){
+  if (rest.length > initialCount){
     btn.style.display = "block";
     btn.textContent = lbShowAll ? "Show less" : `Show all ${active.length} people`;
   } else {
