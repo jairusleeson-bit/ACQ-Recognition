@@ -1,0 +1,16 @@
+name: Friday Recognition
+
+on:
+  schedule:
+    - cron: '0 20 * * 5'   # Fridays 1pm Las Vegas (summer). Winter: change 20 to 21.
+  workflow_dispatch: {}
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Send recognition messages
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+        run: bash send.sh
