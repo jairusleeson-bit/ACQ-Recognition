@@ -1,27 +1,22 @@
 /**
- * ACQ Recognition — Google Sheets capture endpoint
+ * ACQ Recognition — Google Sheets capture endpoint + Slack notifier
  * ---------------------------------------------------------------------------
- * Bridges the (static) GitHub Pages dashboard to the Google Sheet: every time
- * someone submits a recognition, the page POSTs it here and a row is appended.
+ * - doPost: appends each recognition to the Sheet AND (best-effort) DMs the
+ *   person who was recognized on Slack.
+ * - doGet:  returns rows as JSON (JSONP via ?callback=) for the dashboard.
  *
- * Robust by design:
- *   - Opens the sheet by ID (works whether the script is bound or standalone).
- *   - Matches columns BY HEADER NAME (your sheet's blank column A is fine).
- *   - doGet lets you test the deployment by opening the /exec URL in a browser.
+ * SETUP
+ * 1. Set SHEET_ID below to your spreadsheet id.
+ * 2. Add your Slack token as a Script Property (NOT in this file):
+ *      Project Settings (gear) → Script properties → Add script property
+ *      Name: SLACK_BOT_TOKEN   Value: xoxb-...   (scopes: users:lookupByEmail, chat:write)
+ * 3. Deploy → Manage deployments → Edit → Version: New version → Deploy.
  *
- * ── SETUP ──────────────────────────────────────────────────────────────────
- * 1. Set SHEET_ID below to your spreadsheet's id (the long string in its URL:
- *    docs.google.com/spreadsheets/d/<THIS_PART>/edit).
- * 2. Apps Script editor → paste this whole file → Save.
- * 3. Deploy → Manage deployments → ✏️ Edit → Version: New version → Deploy
- *    (keeps the same /exec URL). Web app settings: Execute as = Me,
- *    Who has access = Anyone.
- * 4. Test: open the /exec URL in a browser — you should see
- *    {"ok":true,"message":"ACQ Recognition endpoint is live","rows":0}
- * ───────────────────────────────────────────────────────────────────────────
+ * If SLACK_BOT_TOKEN isn't set, saving still works — it just skips the DM.
  */
 
-var SHEET_ID = 'PASTE_YOUR_SHEET_ID_HERE';
+var SHEET_ID = '1cInQmvvXQuAa8pwZFnAbj7BFnPbhlg1VIdkuqIKAY2k';
+var DASHBOARD_URL = 'https://jairusleeson-bit.github.io/ACQ-Recognition/';
 
 var FIELD_TO_HEADER = {
   firstName:      'First Name',
@@ -31,44 +26,78 @@ var FIELD_TO_HEADER = {
   value:          'Value',
   note:           'Note',
   tokens:         'Tokens',
-  department:     'Department'   // optional: add a "Department" column header to capture it
+  department:     'Department'
 };
 
-function sheet_() {
-  return SpreadsheetApp.openById(SHEET_ID).getSheets()[0];
-}
+function sheet_() { return SpreadsheetApp.openById(SHEET_ID).getSheets()[0]; }
 
 function doPost(e) {
   try {
     var data = JSON.parse(e.postData.contents);
     var sheet = sheet_();
     var lastCol = Math.max(sheet.getLastColumn(), 1);
-    var header = sheet.getRange(1, 1, 1, lastCol).getValues()[0].map(function (h) {
-      return String(h).trim().toLowerCase();
-    });
-
+    var header = sheet.getRange(1, 1, 1, lastCol).getValues()[0].map(function (h) { return String(h).trim().toLowerCase(); });
     var row = new Array(header.length).fill('');
     var matched = 0;
-    Object.keys(FIELD_TO_HEADER).forEach(function (field) {
-      var col = header.indexOf(FIELD_TO_HEADER[field].toLowerCase());
-      if (col !== -1) { row[col] = data[field] != null ? data[field] : ''; matched++; }
+    Object.keys(FIELD_TO_HEADER).forEach(function (f) {
+      var c = header.indexOf(FIELD_TO_HEADER[f].toLowerCase());
+      if (c !== -1) { row[c] = data[f] != null ? data[f] : ''; matched++; }
     });
-
     if (matched === 0) {
-      var order = ['firstName', 'lastName', 'senderEmail', 'recipientEmail', 'value', 'note', 'tokens'];
+      var order = ['firstName', 'lastName', 'senderEmail', 'recipientEmail', 'value', 'note', 'tokens', 'department'];
       sheet.appendRow(order.map(function (f) { return FIELD_TO_HEADER[f]; }));
       sheet.appendRow(order.map(function (f) { return data[f] != null ? data[f] : ''; }));
     } else {
       sheet.getRange(sheet.getLastRow() + 1, 1, 1, row.length).setValues([row]);
     }
+
+    notifyRecipient_(data); // DM the recognized person (never blocks the save)
+
     return json_({ ok: true });
   } catch (err) {
     return json_({ ok: false, error: String(err) });
   }
 }
 
-// GET returns every row as JSON. Supports JSONP via ?callback=fn so the
-// (cross-origin) dashboard can read the rows without a CORS preflight.
+// Best-effort Slack DM to the person who was recognized.
+function notifyRecipient_(data) {
+  try {
+    var token = PropertiesService.getScriptProperties().getProperty('SLACK_BOT_TOKEN');
+    if (!token || !data.recipientEmail) return;
+
+    var look = UrlFetchApp.fetch(
+      'https://slack.com/api/users.lookupByEmail?email=' + encodeURIComponent(data.recipientEmail),
+      { method: 'get', headers: { Authorization: 'Bearer ' + token }, muteHttpExceptions: true });
+    var user = JSON.parse(look.getContentText());
+    if (!user || !user.ok || !user.user) return;
+    var uid = user.user.id;
+
+    var name = String(data.firstName || '').trim() || 'there';
+    var body = '*' + (data.value || 'Recognition') + '*'
+      + (data.tokens ? '  ·  ' + data.tokens + ' tokens' : '')
+      + (data.note ? '\n\n"' + data.note + '"' : '')
+      + (data.senderEmail ? '\n\n— from ' + data.senderEmail : '');
+
+    UrlFetchApp.fetch('https://slack.com/api/chat.postMessage', {
+      method: 'post',
+      contentType: 'application/json',
+      headers: { Authorization: 'Bearer ' + token },
+      muteHttpExceptions: true,
+      payload: JSON.stringify({
+        channel: uid,
+        text: name + ', you were just recognized for ' + (data.value || 'living the values') + '!',
+        blocks: [
+          { type: 'section', text: { type: 'mrkdwn', text: '🎉 *' + name + ', you were just recognized!*\n\n' + body } },
+          { type: 'actions', elements: [{ type: 'button', text: { type: 'plain_text', text: 'Open the board' }, url: DASHBOARD_URL }] }
+        ]
+      })
+    });
+  } catch (err) {
+    // Swallow — a Slack hiccup must never fail the recognition save.
+  }
+}
+
+// GET returns every row as JSON. Supports JSONP via ?callback=fn.
 function doGet(e) {
   try {
     var sheet = sheet_();
